@@ -1,0 +1,148 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @default(autoincrement()) @id
+  email     String   @unique
+  username  String   @unique
+  profilePicture String
+  bio       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  password  Password?
+  servers   Server[] @relation("members")
+  myServers Server[] @relation("owner")
+  messages  Message[]
+  calls     Call[]
+  friends   User[] @relation("friends")
+  friendOf  User[] @relation("friends")
+  likes    Like[]
+  requests  Request[] @relation("requests")
+  myRequests Request[] @relation("myRequests")
+  chats     Chat[]
+}
+
+model Password {
+  id        Int      @default(autoincrement()) @id
+  password  String
+  userId    Int     @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Server {
+  id        Int      @default(autoincrement()) @id
+  name      String   @unique
+  icon      String
+  ownerId   Int
+  private   Boolean?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner     User     @relation("owner", fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  members   User[]  @relation("members")
+  channels  Channel[]
+}
+
+model Channel {
+  id        Int      @default(autoincrement()) @id
+  name      String
+  serverId  Int
+  categoryId Int? 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  category  Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  messages  Message[]
+}
+
+model Category {
+  id        Int      @default(autoincrement()) @id
+  name      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  channels  Channel[]
+}
+
+model Chat {
+  id        Int      @default(autoincrement()) @id
+  name      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  messages  Message[]
+}
+
+model Message {
+  id        Int      @default(autoincrement()) @id
+  content   String
+  attachment String?
+  authorId  Int
+  channelId Int?
+  chatId    Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  channel   Channel?  @relation(fields: [channelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  likes    Like[]
+  chat     Chat?     @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Call {
+  id        Int      @default(autoincrement()) @id
+  status    String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+}
+
+model Like {
+  id        Int      @default(autoincrement()) @id
+  messageId Int
+  userId    Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Request {
+  id        Int      @default(autoincrement()) @id
+  senderId  Int
+  receiverId Int
+  status    String
+  type      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sender    User     @relation("myRequests", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  receiver  User     @relation("requests", fields: [receiverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
