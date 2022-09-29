@@ -31,6 +31,7 @@ export interface Server {
   owner: User;
   members: User[];
   channels: Channel[];
+  categories: Category[];
 }
 
 export interface Channel {
@@ -50,6 +51,7 @@ export interface Channel {
 export interface Category {
   id: number;
   name: string;
+  serverId: number;
 
   createdAt: Date;
   updatedAt: Date;

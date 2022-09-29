@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 import ChannelContainer from "../../components/containers/channelContainer";
 import { getServers } from "../../redux/api";
 import { Server } from "../../redux/api/api.types";
@@ -35,7 +36,7 @@ export default function DupeCord() {
   }, [selectedServer, user]);
 
   return (
-    <div className="fade_in w-full h-full flex">
+    <div className="fade_in w-full h-full flex relative">
       <Servers
         servers={servers}
         selectedServer={selectedServer}
@@ -52,7 +53,9 @@ export default function DupeCord() {
       ) : (
         <ChannelContainer>my stuff</ChannelContainer>
       )}
-      <div className="md:w-full w-[60%] h-full bg-neutral-800"></div>
+      <div className="w-full h-full bg-neutral-800">
+        <Outlet />
+      </div>
     </div>
   );
 }

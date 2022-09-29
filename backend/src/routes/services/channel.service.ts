@@ -24,6 +24,9 @@ export const createChannel = async (
           },
         },
       },
+      include: {
+        category: true,
+      },
     });
   }
 

@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { Modal } from "../../../context/modal/modal";
 import { deleteServer } from "../../../redux/api";
-import type { Category, Server } from "../../../redux/api/api.types";
-import { useAppDispatch } from "../../../redux/hooks";
+import type { Category, Channel, Server } from "../../../redux/api/api.types";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import CreateCategory from "../categories/createCategory";
+import ManageCategories from "../categories/manageCategories";
+import DeleteServer from "../servers/deleteServer";
 import EditServer from "../servers/editServer";
+import ChannelAdmin from "./channelAdmin";
+import CreateChannel from "./createChannel";
+import DeleteChannel from "./deleteChannel";
+import EditChannel from "./editChannel";
 
 export default function Channels({
   isAdmin,
@@ -16,96 +24,75 @@ export default function Channels({
 }) {
   const dispatch = useAppDispatch();
 
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState(selectedServer.categories);
   const [viewOptions, setViewOptions] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setmodalContent] = useState("");
+  const [channel, setChannel] = useState<Channel>();
+  const [categoryId, setCategoryId] = useState(0);
+  const [channelHover, setChannelHover] = useState(0);
+  const [muted, setMuted] = useState(false);
+  const [deafened, setDeafened] = useState(false);
 
-  useEffect(() => {
-    setCategories(selectedServer.channels.map((channel) => channel.category));
-  }, [selectedServer]);
+  const user = useAppSelector((state) => state.session.user);
 
   return (
-    <div className="fade_in w-full h-full flex flex-col gap-10">
-      <div className="w-full flex flex-col gap-1">
-        <h2 className="w-full text-2xl truncate border-b border-neutral-400">
-          {selectedServer.name}
-        </h2>
-        {isAdmin && (
-          <div
-            onClick={() => setViewOptions(!viewOptions)}
-            className="w-full text-left text-xs md:text-sm hover:text-teal-600 cursor-pointer transition-all ease-in-out duration-300 border-b border-neutral-400"
-          >
-            Admin Options
-            {viewOptions ? (
-              <i className="fas fa-chevron-up float-right"></i>
-            ) : (
-              <i className="fas fa-chevron-down float-right"></i>
-            )}
-          </div>
-        )}
-        <div
-          className={`max-h-0 ${
-            viewOptions ? "max-h-[100vh]" : "max-h-0"
-          } overflow-hidden transition-all ease-in-out duration-300`}
-        >
-          {viewOptions && (
-            <div className="fade_in w-full flex flex-col gap-2 py-2 text-xs md:text-sm">
-              <div
-                onClick={() => {
-                  setShowModal(true);
-                  setmodalContent("editServer");
-                }}
-                className="w-full text-right hover:text-cyan-400  cursor-pointer rounded-md transition-all ease-in-out duration-300"
-              >
-                Edit Server
-                <i className="fa-solid fa-pen pl-2"></i>
-              </div>
-              <div
-                onClick={() => {
-                  setShowModal(true);
-                  setmodalContent("deleteServer");
-                }}
-                className="w-full text-right hover:text-red-500  cursor-pointer rounded-md transition-all ease-in-out duration-300"
-              >
-                Delete Server
-                <i className="fa-solid fa-trash pl-2"></i>
-              </div>
-              <div className="w-full text-right hover:text-teal-600  cursor-pointer rounded-md transition-all ease-in-out duration-300">
-                Create Category
-                <i className="fa-solid fa-plus pl-2"></i>
-              </div>
-              <div className="w-full text-right hover:text-cyan-400  cursor-pointer rounded-md transition-all ease-in-out duration-300">
-                Edit Category
-                <i className="fa-solid fa-pen pl-2"></i>
-              </div>
-              <div className="w-full text-right hover:text-teal-600  cursor-pointer rounded-md transition-all ease-in-out duration-300">
-                Create Channel
-                <i className="fa-solid fa-plus pl-2"></i>
-              </div>
-              <div className="w-full text-right hover:text-red-500  cursor-pointer rounded-md transition-all ease-in-out duration-300">
-                Delete Channel
-                <i className="fa-solid fa-trash pl-2"></i>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+    <div className="fade_in w-full h-full flex flex-col justify-between gap-10">
+      <ChannelAdmin
+        selectedServer={selectedServer}
+        isAdmin={isAdmin}
+        viewOptions={viewOptions}
+        setViewOptions={setViewOptions}
+        setShowModal={setShowModal}
+        setmodalContent={setmodalContent}
+      />
       {categories.length > 0 &&
         categories.map((category) => (
           <div key={category.id} className="w-full flex flex-col gap-2">
-            <h3 className="w-full truncate border-b border-neutral-400 text-sm md:text-lg">
-              # {category.name}
-            </h3>
+            <div className="w-full flex justify-between items-center border-b border-neutral-400 px-2">
+              <h3 className="w-full truncate text-sm md:text-lg">
+                # {category.name}
+              </h3>
+              {isAdmin && (
+                <i
+                  onClick={() => {
+                    setShowModal(true);
+                    setCategoryId(category.id);
+                    setmodalContent("createChannel");
+                  }}
+                  className="fa-solid fa-plus cursor-pointer text-neutral-400 hover:text-white transition-all ease-in-out duration-300"
+                ></i>
+              )}
+            </div>
             {selectedServer.channels
-              .filter((channel) => channel.category === category)
+              .filter(
+                (channel) =>
+                  channel.category && channel.category.id === category.id
+              )
               .map((channel) => (
-                <div
-                  className="w-full p-1 cursor-pointer border-b border-neutral-500 transform transition-all duration-300 text-sm hover:bg-neutral-800 rounded-md hover:text-teal-600"
+                <NavLink
+                  to={`/dupecord/${channel.id}`}
+                  onMouseEnter={() => setChannelHover(channel.id)}
+                  onMouseLeave={() => setChannelHover(0)}
+                  className="w-[90%] self-end p-1 cursor-pointer border-b border-neutral-500 transform transition-all duration-300 text-sm hover:bg-neutral-500 flex justify-between items-center rounded-md text-neutral-200 hover:text-neutral-300"
                   key={channel.id}
                 >
-                  {channel.name}
-                </div>
+                  <label className="px-2 truncate">{channel.name}</label>
+                  {isAdmin && channelHover === channel.id && (
+                    <div className="flex flex-row gap-2 px-2">
+                      <i onClick={() => {
+                        setChannel(channel);
+                        setShowModal(true);
+                        setmodalContent("editChannel");
+                      }} className="fa-solid fa-edit cursor-pointer hover:text-orange-400 transition-all ease-in-out duration-300"></i>
+                      <i onClick={() => {
+                        setChannel(channel);
+                        setShowModal(true);
+                        setmodalContent("deleteChannel");
+                      }} className="fa-solid fa-trash hover:text-red-700 transition-all ease-in-out duration-300"></i>
+                    </div>
+                  )}
+                </NavLink>
               ))}
           </div>
         ))}
@@ -119,32 +106,83 @@ export default function Channels({
             />
           )}
           {modalContent === "deleteServer" && (
-            <div className="w-full flex flex-col gap-2 bg-neutral-800 p-6 rounded-md">
-              <h2 className="w-full text-2xl text-center">Delete Server</h2>
-              <p className="w-full text-center">
-                Are you sure you want to delete this server?
-              </p>
-              <div className="w-full flex flex-row gap-2">
-                <button
-                  onClick={() => {
-                    dispatch(deleteServer(selectedServer.id));
-                    setSelectedServer(undefined);
-                  }}
-                  className="w-full p-2 text-white bg-red-500 mt-4 rounded-md"
-                >
-                  Delete
-                </button>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="w-full p-2 rounded-md mt-4 border border-neutral-400"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+            <DeleteServer
+              selectedServer={selectedServer}
+              setSelectedServer={setSelectedServer}
+              setShowModal={setShowModal}
+            />
+          )}
+          {modalContent === "createCategory" && (
+            <CreateCategory
+              setCategories={setCategories}
+              selectedServer={selectedServer}
+              setSelectedServer={setSelectedServer}
+              setShowModal={setShowModal}
+            />
+          )}
+          {modalContent === "manageCategories" && (
+            <ManageCategories
+              categories={categories}
+              setCategories={setCategories}
+              setSelectedServer={setSelectedServer}
+              setShowModal={setShowModal}
+            />
+          )}
+          {modalContent === "createChannel" && (
+            <CreateChannel
+              categoryId={categoryId}
+              selectedServer={selectedServer}
+              setSelectedServer={setSelectedServer}
+              setShowModal={setShowModal}
+            />
+          )}
+          {modalContent === "editChannel" && channel && (
+            <EditChannel
+              channel={channel}
+              categories={categories}
+              selectedServer={selectedServer}
+              setSelectedServer={setSelectedServer}
+              setShowModal={setShowModal}
+            />
+          )}
+          {modalContent === "deleteChannel" && channel && (
+            <DeleteChannel
+              channel={channel}
+              setSelectedServer={setSelectedServer}
+              setShowModal={setShowModal}
+            />
           )}
         </Modal>
       )}
+      <div className="sticky bottom-0 z-1 w-full h-[40px] justify-self-end self-end flex justify-between items-center p-2 border-t border-neutral-400 bg-neutral-800">
+        <label className="text-lg text-neutral-300 truncate">
+          {user?.username}
+        </label>
+        <div className="flex flex-row gap-2 px-2">
+          {muted ? (
+            <i
+              onClick={() => setMuted(false)}
+              className="fa-solid fa-microphone-slash text-red-700 cursor-pointer"
+            ></i>
+          ) : (
+            <i
+              onClick={() => setMuted(true)}
+              className="fa-solid fa-microphone text-neutral-300 cursor-pointer"
+            ></i>
+          )}
+          {deafened ? (
+            <i
+              onClick={() => setDeafened(false)}
+              className="fa-solid fa-phone-slash text-red-700 cursor-pointer"
+            ></i>
+          ) : (
+            <i
+              onClick={() => setDeafened(true)}
+              className="fa-solid fa-phone text-neutral-300 cursor-pointer"
+            ></i>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

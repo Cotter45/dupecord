@@ -5,12 +5,58 @@ import type { Category } from '@prisma/client';
 /**
  * Create a new category
  * @param name - the category name
+ * @param serverId - the server id
  * @returns the category
  * */
-export const createCategory = async (name: string): Promise<Category> => {
+export const createCategory = async (
+  name: string,
+  serverId: number,
+): Promise<Category> => {
   const category = await prisma.category.create({
     data: {
       name,
+      server: {
+        connect: {
+          id: +serverId,
+        },
+      },
+    },
+  });
+
+  return category;
+};
+
+/**
+ * Edit a category
+ * @param id - the category id
+ * @param name - the category name
+ * @returns the category
+ * */
+export const updateCategory = async (
+  id: number,
+  name: string,
+): Promise<Category> => {
+  const category = await prisma.category.update({
+    where: {
+      id,
+    },
+    data: {
+      name,
+    },
+  });
+
+  return category;
+};
+
+/**
+ * Delete a category
+ * @param id - the category id
+ * @returns the category
+ * */
+export const deleteCategory = async (id: number): Promise<Category> => {
+  const category = await prisma.category.delete({
+    where: {
+      id,
     },
   });
 
@@ -33,22 +79,4 @@ export const categoryExists = async (name: string): Promise<boolean> => {
   });
 
   return !!category;
-};
-
-/**
- * Get a paginated list of categories
- * @param skip - the page number
- * @param take - the limit of categories per page
- * @returns the categories
- * */
-export const getCategories = async (
-  skip: number,
-  take: number,
-): Promise<Category[]> => {
-  const categories = await prisma.category.findMany({
-    skip,
-    take,
-  });
-
-  return categories;
 };

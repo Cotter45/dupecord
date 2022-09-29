@@ -16,6 +16,7 @@ model User {
   username  String   @unique
   profilePicture String
   bio       String?
+  online    Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,6 +58,7 @@ model Server {
   owner     User     @relation("owner", fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   members   User[]  @relation("members")
   channels  Channel[]
+  categories Category[]
 }
 
 model Channel {
@@ -76,11 +78,13 @@ model Channel {
 model Category {
   id        Int      @default(autoincrement()) @id
   name      String
+  serverId  Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   channels  Channel[]
+  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Chat {

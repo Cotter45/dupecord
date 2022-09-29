@@ -48,6 +48,7 @@ export const newServer = async (
     },
     include: {
       members: true,
+      categories: true,
       channels: {
         include: {
           category: true,
@@ -82,6 +83,7 @@ export const joinServer = async (
     },
     include: {
       members: true,
+      categories: true,
       channels: {
         include: {
           category: true,
@@ -102,6 +104,15 @@ export const getServerById = async (id: number): Promise<Server | null> => {
   const server = await prisma.server.findUnique({
     where: {
       id,
+    },
+    include: {
+      members: true,
+      categories: true,
+      channels: {
+        include: {
+          category: true,
+        },
+      },
     },
   });
 
@@ -162,6 +173,7 @@ export const getServersByUserId = async (
       ],
     },
     include: {
+      categories: true,
       channels: {
         include: {
           category: true,
@@ -196,6 +208,7 @@ export const updateServer = async (
       private: privateServer,
     },
     include: {
+      categories: true,
       channels: {
         include: {
           category: true,

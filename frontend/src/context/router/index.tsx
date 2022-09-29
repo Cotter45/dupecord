@@ -20,7 +20,10 @@ function Router() {
         {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
         {/* <Route path="/validate-code" element={<ValidateCode />} /> */}
         <Route element={<RequireAuth />}>
-          <Route path="/dupecord" element={<DupeCord />} />
+          <Route path="/dupecord" element={<DupeCord />}>
+            <Route path="" element={<h1>Blank</h1>} />
+            <Route path=":id" element={<h1>test</h1>} />
+          </Route>
         </Route>
         <Route path="*" element={<FourOhFour />} />
       </Routes>

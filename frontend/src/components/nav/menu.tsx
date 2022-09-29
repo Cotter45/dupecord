@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logout } from "../../redux/session";
 
 export default function NavMenu() {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -79,12 +80,36 @@ export default function NavMenu() {
             </>
           ) : (
             <>
+              {!location.pathname.includes("dupecord") && (
+                <div
+                  data-testid="menu_dupecord_button"
+                  onClick={() => {
+                    setIsOpen(!isOpen);
+                    navigate("/dupecord");
+                  }}
+                  className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-800 transition-all ease-in-out duration-500 text-white"
+                >
+                  Dupecord
+                </div>
+              )}
+              {location.pathname.includes("dupecord") && (
+                <div
+                  data-testid="menu_splash_button"
+                  onClick={async () => {
+                    setIsOpen(!isOpen);
+                    navigate("/");
+                  }}
+                  className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-800 transition-all ease-in-out duration-500 text-white"
+                >
+                  Splash Page
+                </div>
+              )}
               <div
                 data-testid="menu_logout_button"
                 onClick={async () => {
                   setIsOpen(!isOpen);
                   await dispatch(logout());
-                  navigate('/login')
+                  navigate("/login");
                 }}
                 className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-800 transition-all ease-in-out duration-500 text-white"
               >

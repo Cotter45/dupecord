@@ -62,6 +62,7 @@ export default function SearchServer({
           type="search"
           name="name"
           id="name"
+          autoFocus
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onMouseEnter={() => setValueFocused(true)}

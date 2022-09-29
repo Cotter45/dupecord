@@ -73,3 +73,21 @@ export const verifyJWT = async (
 
   return { user, token: newToken };
 };
+
+/**
+ * Validate JWT
+ * @param token - the JWT
+ * @returns true or false
+ */
+export const validateJWT = async (token: string): Promise<boolean> => {
+  const decoded = jwt.verify(token, config.jwtConfig.jwtSecret);
+
+  if (!decoded) return false;
+
+  const { username } = decoded as { username: string };
+  const user = await getUserByUsername(username);
+
+  if (!user) return false;
+
+  return true;
+};

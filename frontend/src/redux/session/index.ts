@@ -130,7 +130,7 @@ export const sessionSlice = createSlice({
       })
       .addCase(restore.fulfilled, (state, action: PayloadAction<User>) => {
         state.status = 'idle';
-        if (action.payload.id) {
+        if (action.payload && action.payload.id) {
           state.user = action.payload;
         }
       })

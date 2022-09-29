@@ -5,12 +5,15 @@ import App from './App'
 import { store } from './redux/store'
 import './index.css'
 import { ModalProvider } from './context/modal/modal'
+import SocketProvider from './context/ws'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <Provider store={store}>
     <ModalProvider>
       <BrowserRouter>
-        <App />
+        <SocketProvider>
+          <App />
+        </SocketProvider>
       </BrowserRouter>
     </ModalProvider>
   </Provider>

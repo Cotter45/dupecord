@@ -11,18 +11,6 @@ async function seed() {
     return console.log('User not found');
   });
 
-  const text = await prisma.category.create({
-    data: {
-      name: 'Text Channels',
-    },
-  });
-
-  const voice = await prisma.category.create({
-    data: {
-      name: 'Voice Channels',
-    },
-  });
-
   const demoUser = await prisma.user.create({
     data: {
       email,
@@ -31,6 +19,40 @@ async function seed() {
       password: {
         create: {
           password,
+        },
+      },
+    },
+  });
+
+  const server1 = await prisma.server.create({
+    data: {
+      name: 'Test Server',
+      icon: 'https://www.svgrepo.com/show/353655/discord-icon.svg',
+      owner: {
+        connect: {
+          id: demoUser.id,
+        },
+      },
+    },
+  });
+
+  const text = await prisma.category.create({
+    data: {
+      name: 'Text Channels',
+      server: {
+        connect: {
+          id: server1.id,
+        },
+      },
+    },
+  });
+
+  const voice = await prisma.category.create({
+    data: {
+      name: 'Voice Channels',
+      server: {
+        connect: {
+          id: server1.id,
         },
       },
     },

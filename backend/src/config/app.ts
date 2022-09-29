@@ -1,5 +1,4 @@
 import express from 'express';
-import { createServer } from 'http';
 import { Server } from 'socket.io';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -11,6 +10,7 @@ import { config } from './env';
 import { apiRouter } from '../routes/index';
 
 import type { Express, Request, Response, NextFunction } from 'express';
+import { validateJWT } from '../routes/services/session.service';
 
 const app: Express = express();
 const environment = config.environment;
@@ -28,12 +28,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(helmet());
 
-const httpServer = createServer(app);
-const io = new Server(httpServer, {
+const io = new Server({
   path: '/socket.io',
-  allowRequest: (req, callback) => {
-    // const isOriginValid = check(req);
-    // callback(null, isOriginValid);
+  cors: {
+    origin: ['http://localhost:5173'],
+    allowedHeaders: ['BEARER-TOKEN'],
+    credentials: true,
+  },
+  allowRequest: async (req, callback) => {
+    try {
+      const token = req.headers['cookie'].split('BEARER-TOKEN=')[1];
+      const isValid = await validateJWT(token);
+      callback(null, isValid);
+    } catch (e) {
+      console.error(e);
+    }
   },
 });
 

@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { authFetch } from '../../util/authFetch';
 import { AppThunk } from '../store';
-import type { initialApiState, Server } from './api.types';
+import type { Category, Channel, initialApiState, Server } from './api.types';
 
 const initialState: initialApiState = {
   status: 'idle',
@@ -91,6 +91,102 @@ export const deleteServer = createAsyncThunk(
     }
   });
 
+export const createChannel = createAsyncThunk(
+  'api/createChannel',
+  async (channel: Partial<Channel>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch('/api/channels', {
+        method: 'POST',
+        body: JSON.stringify(channel),
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const editChannel = createAsyncThunk(
+  'api/editChannel',
+  async (channel: Partial<Channel>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch(`/api/channels/${channel.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(channel),
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const deleteChannel = createAsyncThunk(
+  'api/deleteChannel',
+  async (channel: Partial<Channel>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch(`/api/channels/${channel.id}`, {
+        method: 'DELETE',
+        body: JSON.stringify({ serverId: channel.serverId }),
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const createCategory = createAsyncThunk(
+  'api/createCategory',
+  async (category: Partial<Category>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch('/api/categories', {
+        method: 'POST',
+        body: JSON.stringify(category),
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const editCategory = createAsyncThunk(
+  'api/editCategory',
+  async (category: Partial<Category>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch(`/api/categories/${category.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(category),
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const deleteCategory = createAsyncThunk(
+  'api/deleteCategory',
+  async (category: Partial<Category>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch(`/api/categories/${category.id}`, {
+        method: 'DELETE',
+        body: JSON.stringify({ serverId: category.serverId }),
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
 export const apiSlice = createSlice({
   name: 'api',
   initialState,
@@ -163,6 +259,108 @@ export const apiSlice = createSlice({
         }
       })
       .addCase(deleteServer.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(createChannel.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createChannel.fulfilled, (state, action: PayloadAction<Channel>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.id) {
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          if (serverIndex !== -1) {
+            state.servers[serverIndex].channels.push(action.payload);
+          }
+        }
+      })
+      .addCase(createChannel.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(editChannel.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(editChannel.fulfilled, (state, action: PayloadAction<Channel>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.id) {
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          if (serverIndex !== -1) {
+            const channelIndex = state.servers[serverIndex].channels.findIndex((channel) => channel.id === action.payload.id);
+            if (channelIndex !== -1) {
+              state.servers[serverIndex].channels[channelIndex] = action.payload;
+            }
+          }
+        }
+      })
+      .addCase(editChannel.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(deleteChannel.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteChannel.fulfilled, (state, action: PayloadAction<Channel>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.id) {
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          if (serverIndex !== -1) {
+            const channelIndex = state.servers[serverIndex].channels.findIndex((channel) => channel.id === action.payload.id);
+            if (channelIndex !== -1) {
+              state.servers[serverIndex].channels.splice(channelIndex, 1);
+            }
+          }
+        }
+      })
+      .addCase(deleteChannel.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(createCategory.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createCategory.fulfilled, (state, action: PayloadAction<Category>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.id) {
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          if (serverIndex !== -1) {
+            state.servers[serverIndex].categories.push(action.payload);
+          }
+        }
+      })
+      .addCase(createCategory.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(editCategory.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(editCategory.fulfilled, (state, action: PayloadAction<Category>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.id) {
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          if (serverIndex !== -1) {
+            const categoryIndex = state.servers[serverIndex].categories.findIndex((category) => category.id === action.payload.id);
+            if (categoryIndex !== -1) {
+              state.servers[serverIndex].categories[categoryIndex] = action.payload;
+            }
+          }
+        }
+      })
+      .addCase(editCategory.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(deleteCategory.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<Category>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.id) {
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          if (serverIndex !== -1) {
+            const categoryIndex = state.servers[serverIndex].categories.findIndex((category) => category.id === action.payload.id);
+            if (categoryIndex !== -1) {
+              state.servers[serverIndex].categories.splice(categoryIndex, 1);
+            }
+          }
+        }
+      })
+      .addCase(deleteCategory.rejected, (state) => {
         state.status = 'failed';
       })
   },
