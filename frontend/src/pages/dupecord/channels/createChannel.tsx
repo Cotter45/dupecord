@@ -19,7 +19,6 @@ export default function CreateChannel({
   const [name, setName] = useState("");
   const [nameFocused, setNameFocused] = useState(false);
   const [error, setError] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -27,7 +26,7 @@ export default function CreateChannel({
       setError("Please enter a name for your channel.");
       return;
     }
-    const res: any = await dispatch(createChannel({ name, serverId: +selectedServer.id, categoryId: categoryId || categories[0].id }));
+    const res: any = await dispatch(createChannel({ name, serverId: +selectedServer.id, categoryId: categoryId }));
     if (res) {
       setSelectedServer(res.payload);
       setShowModal(false);

@@ -26,7 +26,11 @@ app.use(compression());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  }),
+);
 
 const io = new Server({
   path: '/socket.io',
@@ -45,6 +49,28 @@ const io = new Server({
     }
   },
 });
+
+// Static routes
+if (process.env.NODE_ENV === 'production') {
+  const path = require('path');
+  app.get('/', (req, res) => {
+    res.sendFile(path.resolve('dist', 'build', 'index.html'));
+  });
+
+  app.all('*', (req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      res.redirect(`https://${req.hostname}${req.url}`);
+    } else {
+      next();
+    }
+  });
+
+  app.use(express.static(path.resolve('dist', 'build')));
+
+  app.get(/^(?!\/?api).*/, (req, res) => {
+    res.sendFile(path.resolve('dist', 'build', 'index.html'));
+  });
+}
 
 app.use('/api', apiRouter);
 

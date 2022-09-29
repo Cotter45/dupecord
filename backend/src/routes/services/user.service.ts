@@ -28,9 +28,7 @@ export const createUser = async (
           password: hashedPassword,
         },
       },
-      profilePicture:
-        profilePicture ||
-        'https://www.svgrepo.com/show/353655/discord-icon.svg',
+      profilePicture: profilePicture || '/discordia.svg',
     },
     include: {
       servers: true,

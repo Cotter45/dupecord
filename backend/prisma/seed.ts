@@ -15,7 +15,7 @@ async function seed() {
     data: {
       email,
       username: 'demo',
-      profilePicture: 'https://www.svgrepo.com/show/353655/discord-icon.svg',
+      profilePicture: '/discordia.svg',
       password: {
         create: {
           password,
@@ -27,7 +27,7 @@ async function seed() {
   const server1 = await prisma.server.create({
     data: {
       name: 'Test Server',
-      icon: 'https://www.svgrepo.com/show/353655/discord-icon.svg',
+      icon: '/discordia.svg',
       owner: {
         connect: {
           id: demoUser.id,
@@ -61,7 +61,7 @@ async function seed() {
   await prisma.server.create({
     data: {
       name: 'Demo Server',
-      icon: 'https://www.svgrepo.com/show/353655/discord-icon.svg',
+      icon: '/discordia.svg',
       owner: {
         connect: {
           id: demoUser.id,

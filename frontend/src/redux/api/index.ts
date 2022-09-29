@@ -264,12 +264,12 @@ export const apiSlice = createSlice({
       .addCase(createChannel.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(createChannel.fulfilled, (state, action: PayloadAction<Channel>) => {
+      .addCase(createChannel.fulfilled, (state, action: PayloadAction<Server>) => {
         state.status = 'idle';
         if (action.payload && action.payload.id) {
-          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.id);
           if (serverIndex !== -1) {
-            state.servers[serverIndex].channels.push(action.payload);
+            state.servers[serverIndex] = action.payload;
           }
         }
       })
@@ -279,15 +279,12 @@ export const apiSlice = createSlice({
       .addCase(editChannel.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(editChannel.fulfilled, (state, action: PayloadAction<Channel>) => {
+      .addCase(editChannel.fulfilled, (state, action: PayloadAction<Server>) => {
         state.status = 'idle';
         if (action.payload && action.payload.id) {
-          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.id);
           if (serverIndex !== -1) {
-            const channelIndex = state.servers[serverIndex].channels.findIndex((channel) => channel.id === action.payload.id);
-            if (channelIndex !== -1) {
-              state.servers[serverIndex].channels[channelIndex] = action.payload;
-            }
+            state.servers[serverIndex] = action.payload;
           }
         }
       })
@@ -297,15 +294,12 @@ export const apiSlice = createSlice({
       .addCase(deleteChannel.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(deleteChannel.fulfilled, (state, action: PayloadAction<Channel>) => {
+      .addCase(deleteChannel.fulfilled, (state, action: PayloadAction<Server>) => {
         state.status = 'idle';
         if (action.payload && action.payload.id) {
-          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.id);
           if (serverIndex !== -1) {
-            const channelIndex = state.servers[serverIndex].channels.findIndex((channel) => channel.id === action.payload.id);
-            if (channelIndex !== -1) {
-              state.servers[serverIndex].channels.splice(channelIndex, 1);
-            }
+            state.servers[serverIndex] = action.payload;
           }
         }
       })
@@ -315,12 +309,12 @@ export const apiSlice = createSlice({
       .addCase(createCategory.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(createCategory.fulfilled, (state, action: PayloadAction<Category>) => {
+      .addCase(createCategory.fulfilled, (state, action: PayloadAction<Server>) => {
         state.status = 'idle';
         if (action.payload && action.payload.id) {
-          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.id);
           if (serverIndex !== -1) {
-            state.servers[serverIndex].categories.push(action.payload);
+            state.servers[serverIndex] = action.payload;
           }
         }
       })
@@ -330,15 +324,12 @@ export const apiSlice = createSlice({
       .addCase(editCategory.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(editCategory.fulfilled, (state, action: PayloadAction<Category>) => {
+      .addCase(editCategory.fulfilled, (state, action: PayloadAction<Server>) => {
         state.status = 'idle';
         if (action.payload && action.payload.id) {
-          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.id);
           if (serverIndex !== -1) {
-            const categoryIndex = state.servers[serverIndex].categories.findIndex((category) => category.id === action.payload.id);
-            if (categoryIndex !== -1) {
-              state.servers[serverIndex].categories[categoryIndex] = action.payload;
-            }
+            state.servers[serverIndex] = action.payload;
           }
         }
       })
@@ -348,15 +339,12 @@ export const apiSlice = createSlice({
       .addCase(deleteCategory.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<Category>) => {
+      .addCase(deleteCategory.fulfilled, (state, action: PayloadAction<Server>) => {
         state.status = 'idle';
         if (action.payload && action.payload.id) {
-          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.serverId);
+          const serverIndex = state.servers.findIndex((server) => server.id === action.payload.id);
           if (serverIndex !== -1) {
-            const categoryIndex = state.servers[serverIndex].categories.findIndex((category) => category.id === action.payload.id);
-            if (categoryIndex !== -1) {
-              state.servers[serverIndex].categories.splice(categoryIndex, 1);
-            }
+            state.servers[serverIndex] = action.payload;
           }
         }
       })

@@ -34,10 +34,11 @@
     "morgan": "^1.10.0",
     "node-cache": "^5.1.2",
     "per-env": "^1.0.2",
+    "@prisma/client": "^4.4.0",
     "socket.io": "^4.5.2"
   },
   "devDependencies": {
-    "@prisma/client": "^4.4.0",
+    "prisma": "^4.4.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.3",
@@ -57,7 +58,6 @@
     "jest": "^29.0.3",
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
-    "prisma": "^4.4.0",
     "supertest": "^6.2.4",
     "ts-jest": "^29.0.2",
     "ts-loader": "^9.4.1",

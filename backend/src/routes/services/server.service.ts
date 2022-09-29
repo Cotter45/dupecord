@@ -19,7 +19,7 @@ export const newServer = async (
     data: {
       name,
       private: privateServer,
-      icon: icon || 'https://www.svgrepo.com/show/353655/discord-icon.svg',
+      icon: icon || '/discordia.svg',
       owner: {
         connect: {
           id: ownerId,

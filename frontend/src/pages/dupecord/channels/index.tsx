@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Modal } from "../../../context/modal/modal";
-import { deleteServer } from "../../../redux/api";
 import type { Category, Channel, Server } from "../../../redux/api/api.types";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { useAppSelector } from "../../../redux/hooks";
 import CreateCategory from "../categories/createCategory";
 import ManageCategories from "../categories/manageCategories";
 import DeleteServer from "../servers/deleteServer";
@@ -22,9 +21,7 @@ export default function Channels({
   selectedServer: Server;
   setSelectedServer: (server: Server | undefined) => void;
 }) {
-  const dispatch = useAppDispatch();
-
-  const [categories, setCategories] = useState(selectedServer.categories);
+  const [categories, setCategories] = useState<Category[]>();
   const [viewOptions, setViewOptions] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setmodalContent] = useState("");
@@ -33,6 +30,10 @@ export default function Channels({
   const [channelHover, setChannelHover] = useState(0);
   const [muted, setMuted] = useState(false);
   const [deafened, setDeafened] = useState(false);
+
+  useEffect(() => {
+    setCategories(selectedServer.categories);
+  }, [selectedServer]);
 
   const user = useAppSelector((state) => state.session.user);
 
@@ -46,7 +47,7 @@ export default function Channels({
         setShowModal={setShowModal}
         setmodalContent={setmodalContent}
       />
-      {categories.length > 0 &&
+      {categories && categories.length > 0 &&
         categories.map((category) => (
           <div key={category.id} className="w-full flex flex-col gap-2">
             <div className="w-full flex justify-between items-center border-b border-neutral-400 px-2">
@@ -67,7 +68,7 @@ export default function Channels({
             {selectedServer.channels
               .filter(
                 (channel) =>
-                  channel.category && channel.category.id === category.id
+                  channel.category.id === category.id
               )
               .map((channel) => (
                 <NavLink
@@ -120,7 +121,7 @@ export default function Channels({
               setShowModal={setShowModal}
             />
           )}
-          {modalContent === "manageCategories" && (
+          {modalContent === "manageCategories" && categories && (
             <ManageCategories
               categories={categories}
               setCategories={setCategories}
@@ -136,7 +137,7 @@ export default function Channels({
               setShowModal={setShowModal}
             />
           )}
-          {modalContent === "editChannel" && channel && (
+          {modalContent === "editChannel" && channel && categories && (
             <EditChannel
               channel={channel}
               categories={categories}
