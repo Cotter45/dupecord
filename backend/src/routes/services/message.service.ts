@@ -3,6 +3,34 @@ import { prisma } from '../../config/database';
 import type { Message } from '@prisma/client';
 
 /**
+ * Get messages by channel id
+ * @param channelId - the channel id
+ * @returns the messages
+ */
+export const getMessagesByChannelId = async (
+  channelId: number,
+  skip: number,
+  take: number,
+): Promise<Message[]> => {
+  const messages = await prisma.message.findMany({
+    where: {
+      channelId,
+    },
+    skip,
+    take,
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      author: true,
+      likes: true,
+    },
+  });
+
+  return messages;
+};
+
+/**
  * Create a new message for a chat
  * @param content - the message content
  * @param authorId - the author id
@@ -65,6 +93,10 @@ export const createChannelMessage = async (
         },
       },
     },
+    include: {
+      author: true,
+      likes: true,
+    },
   });
 
   return message;
@@ -86,6 +118,10 @@ export const updateMessage = async (
     },
     data: {
       content,
+    },
+    include: {
+      author: true,
+      likes: true,
     },
   });
 

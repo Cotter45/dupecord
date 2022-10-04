@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { authFetch } from '../../util/authFetch';
 import { AppThunk } from '../store';
-import type { Category, Channel, initialApiState, Server } from './api.types';
+import type { Category, Channel, initialApiState, Message, Server } from './api.types';
 
 const initialState: initialApiState = {
   status: 'idle',
@@ -14,6 +14,7 @@ const initialState: initialApiState = {
   requests: [],
   myRequests: [],
   messages: {},
+  likedMessages: [],
 }
 
 export const getServers = createAsyncThunk(
@@ -187,6 +188,112 @@ export const deleteCategory = createAsyncThunk(
     }
   });
 
+export const getMessages = createAsyncThunk(
+  'api/getMessages',
+  async ({ channelId, skip, take }: { channelId: number, skip: number, take: number }, { rejectWithValue }) => {
+    try {
+      const data = await authFetch(`/api/messages/${channelId}?skip=${skip}&take=${take}`);
+      if (data) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const createChannelMessage = createAsyncThunk(
+  'api/createChannelMessage',
+  async (message: Partial<Message>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch('/api/messages/channel', {
+        method: 'POST',
+        body: JSON.stringify(message),
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const updateMessage = createAsyncThunk(
+  'api/updateMessage',
+  async (message: Partial<Message>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch(`/api/messages/${message.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(message),
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const deleteMessage = createAsyncThunk(
+  'api/deleteMessage',
+  async (message: Partial<Message>, { rejectWithValue }) => {
+    try {
+      const data = await authFetch(`/api/messages/${message.id}`, {
+        method: 'DELETE',
+      });
+      if (data && data.id) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const getLikedMesssages = createAsyncThunk(
+  'api/getLikedMesssages',
+  async (userId: number, { rejectWithValue }) => {
+    try {
+      const data = await authFetch(`/api/likes/${userId}`);
+      if (data) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const likeMessage = createAsyncThunk(
+  'api/likeMessage',
+  async ({ userId, messageId }: { userId: number; messageId: number }, { rejectWithValue }) => {
+    try {
+      const data = await authFetch('/api/likes/like', {
+        method: 'POST',
+        body: JSON.stringify({ userId, messageId }),
+      });
+      if (data && data.messageId) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+export const unlikeMessage = createAsyncThunk(
+  'api/unlikeMessage',
+  async ({ userId, messageId }: { userId: number; messageId: number }, { rejectWithValue }) => {
+    try {
+      const data = await authFetch('/api/likes/unlike', {
+        method: 'DELETE',
+        body: JSON.stringify({ userId, messageId }),
+      });
+      if (data && data.messageId) {
+        return data;
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  });
+
+
 export const apiSlice = createSlice({
   name: 'api',
   initialState,
@@ -351,6 +458,106 @@ export const apiSlice = createSlice({
       .addCase(deleteCategory.rejected, (state) => {
         state.status = 'failed';
       })
+      .addCase(getMessages.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getMessages.fulfilled, (state, action: PayloadAction<{ messages: Message[], channelId: number }>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.channelId)
+          state.messages[action.payload.channelId] = action.payload.messages;
+      })
+      .addCase(getMessages.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(createChannelMessage.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createChannelMessage.fulfilled, (state, action: PayloadAction<Message>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.channelId) {
+          const messages = state.messages[action.payload.channelId];
+          if (messages) {
+            messages.push(action.payload);
+          }
+        }
+      })
+      .addCase(createChannelMessage.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(updateMessage.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateMessage.fulfilled, (state, action: PayloadAction<Message>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.channelId) {
+          const messages = state.messages[action.payload.channelId];
+          if (messages) {
+            const message = messages.findIndex((message) => message.id === action.payload.id);
+            if (message === -1) {
+              messages.push(action.payload);
+            } else {
+              messages[message] = action.payload;
+            }
+          }
+        }
+      })
+      .addCase(updateMessage.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(deleteMessage.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteMessage.fulfilled, (state, action: PayloadAction<Message>) => {
+        state.status = 'idle';
+        if (action.payload && action.payload.channelId) {
+          const messages = state.messages[action.payload.channelId];
+          if (messages) {
+            const message = messages.findIndex((message) => message.id === action.payload.id);
+            if (message !== -1) {
+              messages.splice(message, 1);
+            }
+          }
+        }
+      })
+      .addCase(deleteMessage.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(getLikedMesssages.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getLikedMesssages.fulfilled, (state, action: PayloadAction<number[]>) => {
+        state.status = 'idle';
+        if (action.payload) {
+          state.likedMessages = action.payload;
+        }
+      })
+      .addCase(getLikedMesssages.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(likeMessage.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(likeMessage.fulfilled, (state, action: PayloadAction<{ messageId: number }>) => {
+        state.status = 'idle';
+        state.likedMessages.push(action.payload.messageId);
+      })
+      .addCase(likeMessage.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(unlikeMessage.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(unlikeMessage.fulfilled, (state, action: PayloadAction<{ messageId: number }>) => {
+        state.status = 'idle';
+        const index = state.likedMessages.findIndex((messageId) => messageId === action.payload.messageId);
+        if (index !== -1) {
+          state.likedMessages.splice(index, 1);
+        }
+      })
+      .addCase(unlikeMessage.rejected, (state) => {
+        state.status = 'failed';
+      })
+
   },
 })
 

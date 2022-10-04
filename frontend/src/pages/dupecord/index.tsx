@@ -43,7 +43,7 @@ export default function DupeCord() {
         setSelectedServer={setSelectedServer}
       />
       {selectedServer ? (
-        <ChannelContainer>
+        <ChannelContainer position={'left'}>
           <Channels
             isAdmin={isAdmin}
             selectedServer={selectedServer}
@@ -51,11 +51,14 @@ export default function DupeCord() {
           />
         </ChannelContainer>
       ) : (
-        <ChannelContainer>my stuff</ChannelContainer>
+        <ChannelContainer position={'left'}>my stuff</ChannelContainer>
       )}
       <div className="w-full h-full bg-neutral-800">
         <Outlet />
       </div>
+      <ChannelContainer position={'right'}>
+        <div className="w-full h-full bg-neutral-700"></div>
+      </ChannelContainer>
     </div>
   );
 }

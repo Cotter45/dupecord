@@ -1,6 +1,6 @@
 import { useState, useEffect, MutableRefObject } from "react";
 
-function useOnScreen<T extends Element>(
+export default function useOnScreen<T extends Element>(
   ref: MutableRefObject<T>,
   rootMargin: string = "0px"
 ): boolean {
@@ -19,7 +19,9 @@ function useOnScreen<T extends Element>(
       observer.observe(ref.current);
     }
     return () => {
-      observer.unobserve(ref.current);
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
     };
   }, []);
 

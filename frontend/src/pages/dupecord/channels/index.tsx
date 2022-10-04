@@ -78,7 +78,7 @@ export default function Channels({
                   className="w-[90%] self-end p-1 cursor-pointer border-b border-neutral-500 transform transition-all duration-300 text-sm hover:bg-neutral-500 flex justify-between items-center rounded-md text-neutral-200 hover:text-neutral-300"
                   key={channel.id}
                 >
-                  <label className="px-2 truncate">{channel.name}</label>
+                  <label className="px-2 truncate cursor-pointer">{channel.name}</label>
                   {isAdmin && channelHover === channel.id && (
                     <div className="flex flex-row gap-2 px-2">
                       <i onClick={() => {

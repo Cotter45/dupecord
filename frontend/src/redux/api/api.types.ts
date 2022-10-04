@@ -10,12 +10,9 @@ export interface initialApiState {
   requests: Request[];
   myRequests: Request[];
   messages: {
-    // server ID 
-    [key: number]: {
-      // channel ID
-      [key: number]: Message[];
-    }
-  }
+    [key: number]: Message[];
+  };
+  likedMessages: number[];
 }
 
 export interface Server {

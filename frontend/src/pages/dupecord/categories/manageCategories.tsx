@@ -26,7 +26,7 @@ export default function ManageCategories({
       </p>
       <div className="w-full max-w-[600px] flex flex-col gap-2">
         {categories.map((category) => (
-          <div className="w-full flex flex-col gap-2">
+          <div key={category.id} className="w-full flex flex-col gap-2">
             <EditCategory
               category={category}
               setCategories={setCategories}

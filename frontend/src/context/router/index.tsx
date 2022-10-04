@@ -5,6 +5,7 @@ import FourOhFour from "../../pages/404/index";
 import LoginPage from "../../pages/auth/login";
 import SignupPage from "../../pages/auth/signup";
 import DupeCord from "../../pages/dupecord";
+import Messages from "../../pages/dupecord/messages";
 import Splash from "../../pages/splash";
 
 import RequireAuth from "./requireAuth";
@@ -22,7 +23,7 @@ function Router() {
         <Route element={<RequireAuth />}>
           <Route path="/dupecord" element={<DupeCord />}>
             <Route path="" element={<h1>Blank</h1>} />
-            <Route path=":id" element={<h1>test</h1>} />
+            <Route path=":id" element={<Messages />} />
           </Route>
         </Route>
         <Route path="*" element={<FourOhFour />} />

@@ -3,27 +3,16 @@ services:
 
   # Docker connection string: postgres://postgres:postgres@localhost:5432/
 
-  discordia:
-    container_name: discordia
-    build:
-      dockerfile: Dockerfile
-      context: "."
+  postgres:
+    image: postgres
     restart: always
-    # depends_on:
-    #   - database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
     ports:
-      - 8000:8000
+      - '8080:5432'
 
-  # postgres:
-  #   image: postgres
-  #   restart: always
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #   volumes:
-  #     - postgres:/var/lib/postgresql/data
-  #   ports:
-  #     - '8080:5432'
-
-# volumes:
-#   postgres:
+volumes:
+  postgres:
