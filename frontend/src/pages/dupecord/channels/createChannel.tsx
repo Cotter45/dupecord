@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { useSocket } from "../../../context/ws";
 import { createChannel } from "../../../redux/api";
 import { Category, Server } from "../../../redux/api/api.types";
 import { useAppDispatch } from "../../../redux/hooks";
@@ -15,6 +16,7 @@ export default function CreateChannel({
   setShowModal: (show: boolean) => void;
 }) {
   const dispatch = useAppDispatch();
+  const socket = useSocket();
 
   const [name, setName] = useState("");
   const [nameFocused, setNameFocused] = useState(false);
@@ -30,6 +32,9 @@ export default function CreateChannel({
     if (res) {
       setSelectedServer(res.payload);
       setShowModal(false);
+      if (socket && socket.current !== null) {
+        socket.current.emit('message', { type: 'replace-server', data: { server: res.payload } });
+      }
     }
   }
 

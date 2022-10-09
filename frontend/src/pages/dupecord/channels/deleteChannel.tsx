@@ -1,3 +1,4 @@
+import { useSocket } from "../../../context/ws";
 import { deleteChannel } from "../../../redux/api";
 import type { Channel, Server } from "../../../redux/api/api.types";
 import { useAppDispatch } from "../../../redux/hooks";
@@ -12,12 +13,19 @@ export default function DeleteChannel({
   setShowModal: (show: boolean) => void;
 }) {
   const dispatch = useAppDispatch();
+  const socket = useSocket();
 
   const handleDelete = async () => {
     const res = await dispatch(
       deleteChannel({ id: channel.id, serverId: channel.serverId })
     );
     setSelectedServer(res.payload);
+    if (socket && socket.current !== null) {
+      socket.current.emit("message", {
+        type: "replace-server",
+        data: { server: res.payload },
+      });
+    }
     setShowModal(false);
   }
   return (

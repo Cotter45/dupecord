@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { useAppDispatch } from "../../../redux/hooks";
 import type { Channel, Category, Server } from "../../../redux/api/api.types";
 import { editChannel } from "../../../redux/api";
+import { useSocket } from "../../../context/ws";
 
 export default function EditChannel({ 
   channel, 
@@ -17,6 +18,7 @@ export default function EditChannel({
   setShowModal: (show: boolean) => void; 
 }) {
     const dispatch = useAppDispatch(); 
+    const socket = useSocket();
     
     const [name, setName] = useState(channel.name); 
     const [nameFocused, setNameFocused] = useState(false); 
@@ -32,6 +34,12 @@ export default function EditChannel({
       const res: any = await dispatch(editChannel({ name, categoryId: categoryId, id: channel.id, serverId: selectedServer.id }));
       if (res) {
         setSelectedServer(res.payload);
+        if (socket && socket.current !== null) {
+          socket.current.emit("message", {
+            type: "replace-server",
+            data: { server: res.payload },
+          });
+        }
         setShowModal(false);
       }
     };

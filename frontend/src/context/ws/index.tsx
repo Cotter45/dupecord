@@ -7,6 +7,7 @@ import React, {
 import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { io, Socket as IOSocket } from "socket.io-client";
+import { replaceServer, addChannelMessage } from "../../redux/api";
 
 import {
   useAppDispatch,
@@ -15,7 +16,7 @@ import {
 
 export const SocketContext =
   createContext<React.MutableRefObject<IOSocket | null> | null>(null);
-export const Socket = () => useContext(SocketContext);
+export const useSocket = () => useContext(SocketContext);
 
 interface SocketProviderProps {
   children: React.ReactNode;
@@ -34,9 +35,8 @@ function SocketProvider({ children }: SocketProviderProps) {
     if (socket.current) return;
 
     let websocket = io(
-      import.meta.env.NODE_ENV === "production"
-        ? window.location.origin.replace(/^https/, "wss") + `/socket.io`
-        : "http://localhost:4000",
+      import.meta.env.MODE === "development"
+        ? "http://localhost:8000" : window.location.origin.replace(/^https/, "wss") + `/socket.io`,
       {
         path: "/socket.io",
         reconnectionDelay: 1000,
@@ -50,14 +50,12 @@ function SocketProvider({ children }: SocketProviderProps) {
     );
     websocket.emit('message', {
       type: 'login',
-      data: {
-        email: user.email,
-      },
+      data: user.id,
     })
 
     websocket.on('connection', (e) => {
       console.log("Socket Open");
-      websocket.emit("message", { test: "test" });
+      // socket.current = websocket;
     });
 
     websocket.on('error', async (e) => {
@@ -89,6 +87,12 @@ function SocketProvider({ children }: SocketProviderProps) {
       console.log(message);
 
       switch (message.type) {
+        case 'replace-server':
+          dispatch(replaceServer(message.data));
+          break;
+        case 'channel-message':
+          dispatch(addChannelMessage(message.data.message));
+          break;
         case "notification":
           if (localStorage.getItem("notificationSounds") === "true") {
             const notificationAudio = new Audio(

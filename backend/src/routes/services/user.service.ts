@@ -56,10 +56,39 @@ export const getUserById = async (id: number): Promise<User | null> => {
     where: {
       id,
     },
+  });
+
+  return user;
+};
+
+/**
+ * Get user by id for websocket
+ * @param id - the user id
+ * @returns the user
+ */
+export const getUserByIdForWebsocket = async (
+  id: number,
+): Promise<User | null> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
     include: {
-      servers: true,
-      myServers: true,
-      friends: true,
+      servers: {
+        select: {
+          id: true,
+        },
+      },
+      myServers: {
+        select: {
+          id: true,
+        },
+      },
+      friends: {
+        select: {
+          email: true,
+        },
+      },
     },
   });
 
@@ -124,13 +153,21 @@ export const searchUserByUsernameOrEmail = async (
  * @param bio? - the user bio
  * @returns the user
  * */
-export const updateUser = async (
-  id: number,
-  username?: string,
-  email?: string,
-  profilePicture?: string,
-  bio?: string,
-): Promise<User | null> => {
+export const updateUser = async ({
+  id,
+  username,
+  email,
+  profilePicture,
+  bio,
+  online,
+}: {
+  id: number;
+  username: string;
+  email: string;
+  profilePicture: string;
+  bio: string;
+  online: boolean;
+}): Promise<User | null> => {
   const user = await prisma.user.update({
     where: {
       id,
@@ -140,6 +177,7 @@ export const updateUser = async (
       email,
       profilePicture,
       bio,
+      online,
     },
     include: {
       servers: true,

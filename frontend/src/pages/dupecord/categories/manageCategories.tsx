@@ -1,3 +1,4 @@
+import { useSocket } from "../../../context/ws";
 import { deleteCategory, editCategory } from "../../../redux/api";
 import type { Category, Server } from "../../../redux/api/api.types";
 import { useAppDispatch } from "../../../redux/hooks";
@@ -15,6 +16,7 @@ export default function ManageCategories({
   setShowModal: (show: boolean) => void;
 }) {
   const dispatch = useAppDispatch();
+  const socket = useSocket();
 
   return (
     <div className="w-full max-w-[80vw] h-full max-h-[80vh] overflow-y-auto flex flex-col justify-start items-center gap-4 bg-neutral-800 text-white p-4 rounded-md">
@@ -39,6 +41,12 @@ export default function ManageCategories({
                 if (res) {
                   setSelectedServer(res.payload);
                   setCategories(res.payload.categories);
+                  if (socket && socket.current !== null) {
+                    socket.current.emit("message", {
+                      type: "replace-server",
+                      data: { server: res.payload },
+                    });
+                  }
                 }
               }}
             >

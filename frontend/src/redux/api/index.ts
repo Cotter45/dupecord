@@ -299,6 +299,23 @@ export const apiSlice = createSlice({
   initialState,
   reducers: {
     resetApiState: () => initialState,
+    replaceServer: (state, action: PayloadAction<Server>) => {
+      state.servers = state.servers.map((server) => {
+        if (server.id === action.payload.id) {
+          return action.payload;
+        }
+        return server;
+      });
+    },
+    addChannelMessage: (state, action: PayloadAction<Message>) => {
+      if (action.payload && action.payload.channelId) {
+        if (state.messages[action.payload.channelId]) {
+         state.messages[action.payload.channelId].push(action.payload);
+        } else {
+          state.messages[action.payload.channelId] = [action.payload];
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -537,9 +554,19 @@ export const apiSlice = createSlice({
       .addCase(likeMessage.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(likeMessage.fulfilled, (state, action: PayloadAction<{ messageId: number }>) => {
+      .addCase(likeMessage.fulfilled, (state, action: PayloadAction<{ messageId: number, message: Message }>) => {
         state.status = 'idle';
         state.likedMessages.push(action.payload.messageId);
+
+        if (action.payload && action.payload.message.channelId) {
+          const messages = state.messages[action.payload.message.channelId];
+          if (messages) {
+            const messageIndex = messages.findIndex((message) => message.id === action.payload.message.id);
+            if (messageIndex !== -1) {
+              messages[messageIndex] = action.payload.message;
+            }
+          }
+        }
       })
       .addCase(likeMessage.rejected, (state) => {
         state.status = 'failed';
@@ -547,11 +574,18 @@ export const apiSlice = createSlice({
       .addCase(unlikeMessage.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(unlikeMessage.fulfilled, (state, action: PayloadAction<{ messageId: number }>) => {
+      .addCase(unlikeMessage.fulfilled, (state, action: PayloadAction<{ messageId: number, message: Message }>) => {
         state.status = 'idle';
         const index = state.likedMessages.findIndex((messageId) => messageId === action.payload.messageId);
         if (index !== -1) {
           state.likedMessages.splice(index, 1);
+        }
+        if (action.payload.message.channelId) {
+          const messageIndex = state.messages[action.payload.message.channelId].findIndex((message) => message.id === action.payload.messageId);
+
+          if (messageIndex !== -1) {
+            state.messages[action.payload.message.channelId][messageIndex] = action.payload.message;
+          }
         }
       })
       .addCase(unlikeMessage.rejected, (state) => {
@@ -561,6 +595,6 @@ export const apiSlice = createSlice({
   },
 })
 
-export const { resetApiState } = apiSlice.actions;
+export const { resetApiState, addChannelMessage, replaceServer } = apiSlice.actions;
 
 export default apiSlice.reducer;

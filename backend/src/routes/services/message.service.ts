@@ -3,6 +3,25 @@ import { prisma } from '../../config/database';
 import type { Message } from '@prisma/client';
 
 /**
+ * Get message by id
+ * @param messageId - the message id
+ * @returns the message
+ */
+export const getMessageById = async (messageId: number): Promise<Message> => {
+  const message = await prisma.message.findUnique({
+    where: {
+      id: messageId,
+    },
+    include: {
+      author: true,
+      likes: true,
+    },
+  });
+
+  return message;
+};
+
+/**
  * Get messages by channel id
  * @param channelId - the channel id
  * @returns the messages
@@ -96,6 +115,7 @@ export const createChannelMessage = async (
     include: {
       author: true,
       likes: true,
+      channel: true,
     },
   });
 

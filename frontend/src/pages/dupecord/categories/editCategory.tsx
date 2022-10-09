@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSocket } from "../../../context/ws";
 import { editCategory } from "../../../redux/api";
 import type { Category, Server } from "../../../redux/api/api.types";
 import { useAppDispatch } from "../../../redux/hooks";
@@ -13,6 +14,7 @@ export default function EditCategory({
   setSelectedServer: (server: Server | undefined) => void;
 }) {
   const dispatch = useAppDispatch();
+  const socket = useSocket();
 
   const [name, setName] = useState(category.name);
 
@@ -38,6 +40,12 @@ export default function EditCategory({
           if (res) {
             setSelectedServer(res.payload);
             setCategories(res.payload.categories);
+            if (socket && socket.current !== null) {
+              socket.current.emit("message", {
+                type: "replace-server",
+                data: { server: res.payload },
+              });
+            }
           }
         }}
       />

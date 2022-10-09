@@ -10,6 +10,7 @@ export interface initialApiState {
   requests: Request[];
   myRequests: Request[];
   messages: {
+    // channelId
     [key: number]: Message[];
   };
   likedMessages: number[];

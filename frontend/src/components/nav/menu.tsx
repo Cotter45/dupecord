@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSocket } from "../../context/ws";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logout } from "../../redux/session";
 
@@ -7,6 +8,7 @@ export default function NavMenu() {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const socket = useSocket();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -107,6 +109,7 @@ export default function NavMenu() {
               <div
                 data-testid="menu_logout_button"
                 onClick={async () => {
+                  socket && socket.current && socket.current.emit("message", { type: "logout", data: { id: user.id }});
                   setIsOpen(!isOpen);
                   await dispatch(logout());
                   navigate("/login");

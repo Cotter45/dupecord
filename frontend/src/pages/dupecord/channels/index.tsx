@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+
 import { Modal } from "../../../context/modal/modal";
 import type { Category, Channel, Server } from "../../../redux/api/api.types";
 import { useAppSelector } from "../../../redux/hooks";
@@ -21,6 +23,8 @@ export default function Channels({
   selectedServer: Server;
   setSelectedServer: (server: Server | undefined) => void;
 }) {
+  const params: { id?: number } = useParams();
+
   const [categories, setCategories] = useState<Category[]>();
   const [viewOptions, setViewOptions] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -47,7 +51,8 @@ export default function Channels({
         setShowModal={setShowModal}
         setmodalContent={setmodalContent}
       />
-      {categories && categories.length > 0 &&
+      {categories &&
+        categories.length > 0 &&
         categories.map((category) => (
           <div key={category.id} className="w-full flex flex-col gap-2">
             <div className="w-full flex justify-between items-center border-b border-neutral-400 px-2">
@@ -66,31 +71,44 @@ export default function Channels({
               )}
             </div>
             {selectedServer.channels
-              .filter(
-                (channel) =>
-                  channel.category.id === category.id
-              )
+              .filter((channel) => channel.category.id === category.id)
               .map((channel) => (
                 <NavLink
                   to={`/dupecord/${channel.id}`}
                   onMouseEnter={() => setChannelHover(channel.id)}
                   onMouseLeave={() => setChannelHover(0)}
-                  className="w-[90%] self-end p-1 cursor-pointer border-b border-neutral-500 transform transition-all duration-300 text-sm hover:bg-neutral-500 flex justify-between items-center rounded-md text-neutral-200 hover:text-neutral-300"
+                  className={`relative w-[90%] self-end p-1 cursor-pointer transform transition-all duration-300 text-sm 0 flex justify-between items-center  text-neutral-200 hover:text-teal-400 ${params.id && +params.id === channel.id &&
+                    "text-teal-400"
+                  }`}
                   key={channel.id}
                 >
-                  <label className="px-2 truncate cursor-pointer">{channel.name}</label>
+                  <label className="px-2 truncate cursor-pointer">
+                    {channel.name}
+                  </label>
+                  {params.id && +params.id === channel.id && (
+                    <motion.div
+                      layoutId="channel-underline"
+                      className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-violet-600"
+                    ></motion.div>
+                  )}
                   {isAdmin && channelHover === channel.id && (
-                    <div className="flex flex-row gap-2 px-2">
-                      <i onClick={() => {
-                        setChannel(channel);
-                        setShowModal(true);
-                        setmodalContent("editChannel");
-                      }} className="fa-solid fa-edit cursor-pointer hover:text-orange-400 transition-all ease-in-out duration-300"></i>
-                      <i onClick={() => {
-                        setChannel(channel);
-                        setShowModal(true);
-                        setmodalContent("deleteChannel");
-                      }} className="fa-solid fa-trash hover:text-red-700 transition-all ease-in-out duration-300"></i>
+                    <div className="flex flex-row gap-2 px-2 text-neutral-200">
+                      <i
+                        onClick={() => {
+                          setChannel(channel);
+                          setShowModal(true);
+                          setmodalContent("editChannel");
+                        }}
+                        className="fa-solid fa-edit cursor-pointer hover:text-orange-400 transition-all ease-in-out duration-300"
+                      ></i>
+                      <i
+                        onClick={() => {
+                          setChannel(channel);
+                          setShowModal(true);
+                          setmodalContent("deleteChannel");
+                        }}
+                        className="fa-solid fa-trash hover:text-red-700 transition-all ease-in-out duration-300"
+                      ></i>
                     </div>
                   )}
                 </NavLink>

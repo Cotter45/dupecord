@@ -23,6 +23,17 @@ export const createChannel = async (
             id: +serverId,
           },
         },
+        category: {
+          connectOrCreate: {
+            where: {
+              id: 1,
+            },
+            create: {
+              name: 'Text Channels',
+              serverId: +serverId,
+            },
+          },
+        },
       },
       include: {
         category: true,

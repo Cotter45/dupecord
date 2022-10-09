@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { useSocket } from "../../../context/ws";
 import { createChannelMessage } from "../../../redux/api";
 import type { Message } from "../../../redux/api/api.types";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
@@ -13,6 +14,7 @@ export default function CreateMessage({
   channelId: number;
 }) {
   const dispatch = useAppDispatch();
+  const socket = useSocket();
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -40,6 +42,9 @@ export default function CreateMessage({
       newMessage.payload.id
       ) {
       setMessages([...messages, newMessage.payload]);
+      if (socket && socket.current !== null) {
+        socket.current.emit('message', { type: 'channel-message', data: { message: newMessage.payload } });
+      }
       return setMessage("");
     }
     setError("Something went wrong");

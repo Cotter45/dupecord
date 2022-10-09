@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import Nav from './components/nav'
 import Router from './context/router'
 import { getLikedMesssages } from './redux/api'
@@ -7,6 +8,7 @@ import { restore } from './redux/session'
 
 function App() {
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const [loaded, setLoaded] = useState(false);
   const user = useAppSelector((state) => state.session.user);
@@ -23,8 +25,9 @@ function App() {
 
   return (
     <div className="w-screen min-h-screen h-full bg-neutral-800">
-      <Nav />
-      <main className="w-full h-[calc(100vh-80px)] overflow-y-auto flex flex-col gap-12 items-center">
+      {!location.pathname.includes("dupecord") && <Nav />}
+      {/* <Nav /> */}
+      <main className="w-full h-[calc(100vh)] overflow-y-auto flex flex-col gap-12 items-center overflow-x-hidden">
         <Router />
       </main>
     </div>

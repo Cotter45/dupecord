@@ -28,6 +28,7 @@ export default function MessagesContainer({
   const [messageEdit, setMessageEdit] = useState('');
   const [messageMark, setMessageMark] = useState<Message | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [noMoar, setNoMoar] = useState(false);
 
   const user = useAppSelector((state) => state.session.user);
   const likedMessages = useAppSelector((state) => state.api.likedMessages);
@@ -72,20 +73,31 @@ export default function MessagesContainer({
     if (isIntersecting) {
       (async () => {
         if (!messages.length) return;
+        if (noMoar) return;
         const moreMessages = await authFetch(`/api/messages/${params.id}?skip=${messages.length}&take=10`);
 
+        if (!moreMessages.messages.length) return setNoMoar(true);
         setMessages([...messages, ...moreMessages.messages]);
       })();
     }
   }, [isIntersecting, messages, params.id]);
 
+  useEffect(() => {
+    setNoMoar(false);
+  }, [messages, params.id]);
+
   return (
     <div
       id="messages-container"
       style={{ borderRadius: "0 0 5px 5px" }}
-      className="fade_in w-[calc(100%+28px)] h-full overflow-hidden overflow-y-auto flex flex-col-reverse py-4 -translate-x-[14px]"
+      className="fade_in w-[calc(100%)] h-full overflow-hidden overflow-y-auto flex flex-col-reverse py-4 "
     >
-      <div id="scroller" className="h-0 w-0" />
+      {messages.length === 0 && (
+        <div className="relative w-full flex justify-center items-center">
+          <div className="absolute top-0 left-0 -translate-y-[45%] w-full h-full border-b border-dashed border-neutral-400" />
+          <h1 className="absolute text-xl text-neutral-300 bg-neutral-800 p-4">No messages yet!</h1>
+        </div>
+      )}
       {messages
         .slice()
         .sort(
@@ -106,35 +118,40 @@ export default function MessagesContainer({
             </div>
             <div className="w-full flex flex-col">
               <div className="flex items-center justify-between ">
-                <div className="font-bold text-neutral-100">
+                <div className="flex items-center gap-2 font-bold text-neutral-100">
                   <label>{message.author.username}</label>
-                  {user && message.authorId !== user.id && (
-                    <i
-                      onClick={() => {
-                        const liked = likedMessages.includes(message.id);
-                        if (!liked) {
+                  <div className="flex items-center">
+                    {user && (
+                      <i
+                        onClick={() => {
+                          const liked = likedMessages.includes(message.id);
+                          if (!liked) {
+                            dispatch(
+                              likeMessage({
+                                messageId: message.id,
+                                userId: user.id,
+                              })
+                            );
+                            return;
+                          }
                           dispatch(
-                            likeMessage({
+                            unlikeMessage({
                               messageId: message.id,
                               userId: user.id,
                             })
                           );
-                          return;
-                        }
-                        dispatch(
-                          unlikeMessage({
-                            messageId: message.id,
-                            userId: user.id,
-                          })
-                        );
-                      }}
-                      className={`fa-solid fa-heart text-xs pl-2 cursor-pointer hover:scale-125 transition-all ease-in-out duration-500 ${
-                        likedMessages.includes(message.id)
-                          ? "text-red-700 scale-110"
-                          : "text-neutral-400"
-                      }`}
-                    ></i>
-                  )}
+                        }}
+                        className={`fa-solid fa-heart text-xs pl-2 cursor-pointer hover:scale-125 transition-all ease-in-out duration-500 ${
+                          likedMessages.includes(message.id)
+                            ? "text-red-700 scale-110"
+                            : "text-neutral-400"
+                        }`}
+                      ></i>
+                    )}
+                    <label className="text-xs text-neutral-400 pl-2">
+                      {message.likes.length}
+                    </label>
+                  </div>
                 </div>
 
                 <div className="flex gap-2 items-center pr-2">
@@ -196,7 +213,7 @@ export default function MessagesContainer({
             </div>
           </div>
         ))}
-      <div ref={paginationRef} className="h-0 w-0" />
+      <div ref={paginationRef} className="h-0 w-full" />
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
           <div className="w-full flex flex-col gap-2 bg-neutral-800 p-6 rounded-md max-w-[700px]">

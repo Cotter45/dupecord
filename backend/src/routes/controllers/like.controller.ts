@@ -5,6 +5,7 @@ import {
   deleteLike,
   getLikedMessages,
 } from '../services/like.service';
+import { getMessageById } from '../services/message.service';
 
 const likeRouter = express.Router();
 
@@ -30,7 +31,8 @@ likeRouter.post(
     try {
       const { userId, messageId } = req.body;
       await createLike(+userId, +messageId);
-      res.status(200).json({ messageId });
+      const message = await getMessageById(+messageId);
+      res.status(200).json({ messageId, message });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: 'Internal server error' });
@@ -45,7 +47,8 @@ likeRouter.delete(
     try {
       const { userId, messageId } = req.body;
       await deleteLike(+userId, +messageId);
-      res.status(200).json({ messageId });
+      const message = await getMessageById(+messageId);
+      res.status(200).json({ messageId, message });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: 'Internal server error' });

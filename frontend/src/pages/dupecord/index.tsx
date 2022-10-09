@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import ChannelContainer from "../../components/containers/channelContainer";
 import { getServers } from "../../redux/api";
 import { Server } from "../../redux/api/api.types";
+import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from "../../redux/hooks"
 import Channels from "./channels";
 import Servers from "./servers";
@@ -16,6 +17,7 @@ export default function DupeCord() {
   const [loaded, setLoaded] = useState(false);
   const [selectedServer, setSelectedServer] = useState<Server>();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("friends");
 
   useEffect(() => {
     if (loaded) return;
@@ -35,6 +37,12 @@ export default function DupeCord() {
     }
   }, [selectedServer, user]);
 
+  useEffect(() => {
+    if (!selectedServer) return;
+    const selected = servers.find((server) => server.id === selectedServer?.id);
+    setSelectedServer(selected);
+  }, [servers, selectedServer]);
+
   return (
     <div className="fade_in w-full h-full flex relative">
       <Servers
@@ -43,7 +51,7 @@ export default function DupeCord() {
         setSelectedServer={setSelectedServer}
       />
       {selectedServer ? (
-        <ChannelContainer position={'left'}>
+        <ChannelContainer position={"left"}>
           <Channels
             isAdmin={isAdmin}
             selectedServer={selectedServer}
@@ -51,13 +59,44 @@ export default function DupeCord() {
           />
         </ChannelContainer>
       ) : (
-        <ChannelContainer position={'left'}>my stuff</ChannelContainer>
+        <ChannelContainer position={"left"}>my stuff</ChannelContainer>
       )}
-      <div className="w-full h-full bg-neutral-800">
+      <div className="w-full h-full bg-neutral-800 overflow-x-hidden">
         <Outlet />
       </div>
-      <ChannelContainer position={'right'}>
-        <div className="w-full h-full bg-neutral-700"></div>
+      <ChannelContainer position={"right"}>
+        <div className="w-full h-full bg-neutral-700">
+          <div className="relative w-full flex justify-evenly items-center p-2">
+            <div
+              className={`${
+                selectedTab === "friends" ? "text-teal-400" : ""
+              } relative cursor-pointer transition-all ease-in-out duration-300`}
+              onClick={() => setSelectedTab("friends")}
+            >
+              Friends
+              {selectedTab === "friends" && (
+                <motion.div
+                  layoutId="underline"
+                  className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-violet-600"
+                ></motion.div>
+              )}
+            </div>
+            <div
+              className={`${
+                selectedTab === "requests" ? "text-teal-400" : ""
+              } relative cursor-pointer transition-all ease-in-out duration-300`}
+              onClick={() => setSelectedTab("requests")}
+            >
+              Requests
+              {selectedTab === "requests" && (
+                <motion.div
+                  layoutId="underline"
+                  className="absolute -bottom-[1px] left-0 right-0 h-[2px] bg-violet-600"
+                ></motion.div>
+              )}
+            </div>
+          </div>
+        </div>
       </ChannelContainer>
     </div>
   );

@@ -36,9 +36,9 @@ export default function ChannelContainer({
       <div
         className={`${
           !open ? "w-0 min-w-0" : "min-w-[200px] max-w-[300px] w-[40%]"
-        } relative z-0 h-full bg-neutral-700 overflow-y-auto transition-all ease-in-out duration-500 ${classes}`}
+        } relative z-0 h-full bg-neutral-700 overflow-hidden overflow-y-auto transition-all ease-in-out duration-500 ${classes}`}
       >
-        {open && children}
+        {children}
       </div>
       {position === "left" && (
         <>

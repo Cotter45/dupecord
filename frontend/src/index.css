@@ -345,3 +345,12 @@ progress::-webkit-progress-value {
   overflow-y: auto;
   transition: max-width 0.5s ease-in-out;
 }
+
+.underline {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #8855ff;
+}

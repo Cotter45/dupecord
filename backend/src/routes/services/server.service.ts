@@ -25,26 +25,66 @@ export const newServer = async (
           id: ownerId,
         },
       },
-      channels: {
-        create: [
-          {
-            name: 'text',
-            category: {
-              connect: {
-                id: 1,
-              },
-            },
-          },
-          {
-            name: 'voice',
-            category: {
-              connect: {
-                id: 2,
-              },
-            },
-          },
-        ],
+    },
+  });
+
+  const category1 = await prisma.category.create({
+    data: {
+      name: 'Text Channels',
+      server: {
+        connect: {
+          id: server.id,
+        },
       },
+    },
+  });
+
+  const category2 = await prisma.category.create({
+    data: {
+      name: 'Voice Channels',
+      server: {
+        connect: {
+          id: server.id,
+        },
+      },
+    },
+  });
+
+  await prisma.channel.create({
+    data: {
+      name: 'text',
+      server: {
+        connect: {
+          id: server.id,
+        },
+      },
+      category: {
+        connect: {
+          id: category1.id,
+        },
+      },
+    },
+  });
+
+  await prisma.channel.create({
+    data: {
+      name: 'voice',
+      server: {
+        connect: {
+          id: server.id,
+        },
+      },
+      category: {
+        connect: {
+          id: category2.id,
+        },
+      },
+    },
+  });
+
+  const fullServer = await prisma.server.findUnique({
+    where: {
+      id: server.id,
     },
     include: {
       members: true,
@@ -57,7 +97,7 @@ export const newServer = async (
     },
   });
 
-  return server;
+  return fullServer;
 };
 
 /**

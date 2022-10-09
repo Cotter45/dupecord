@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { useSocket } from "../../../context/ws";
 import { createCategory } from "../../../redux/api";
 import { Category, Server } from "../../../redux/api/api.types";
 import { useAppDispatch } from "../../../redux/hooks";
@@ -15,6 +16,7 @@ export default function CreateCategory({
   setSelectedServer: (server: Server | undefined) => void;
 }) {
   const dispatch = useAppDispatch();
+  const socket = useSocket();
 
   const [name, setName] = useState("");
   const [nameFocused, setNameFocused] = useState(false);
@@ -30,6 +32,12 @@ export default function CreateCategory({
     if (res) {
       setSelectedServer(res.payload);
       setCategories(res.payload.categories);
+      if (socket && socket.current !== null) {
+        socket.current.emit("message", {
+          type: "replace-server",
+          data: { server: res.payload },
+        });
+      }
       setShowModal(false);
     }
   };

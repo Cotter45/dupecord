@@ -1,15 +1,11 @@
-# fly.toml file generated for discordia on 2022-09-29T10:13:43-04:00
+# fly.toml file generated for discordia on 2022-10-08T13:11:24-04:00
 
 app = "discordia"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
-[build]
-  builder = "heroku/buildpacks:20"
-
 [env]
-  PORT = "8080"
 
 [experimental]
   allowed_public_ports = []

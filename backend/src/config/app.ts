@@ -1,5 +1,6 @@
 import express from 'express';
 import { Server } from 'socket.io';
+import { createServer } from 'http';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -15,6 +16,8 @@ import { validateJWT } from '../routes/services/session.service';
 const app: Express = express();
 const environment = config.environment;
 const isProduction = environment === 'production';
+
+const server = createServer(app);
 
 if (environment === 'development') {
   app.use(morgan('dev'));
@@ -32,10 +35,10 @@ app.use(
   }),
 );
 
-const io = new Server({
+const io = new Server(server, {
   path: '/socket.io',
   cors: {
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'https://discordia.fly.dev'],
     allowedHeaders: ['BEARER-TOKEN'],
     credentials: true,
   },
@@ -54,7 +57,7 @@ const io = new Server({
 if (process.env.NODE_ENV === 'production') {
   const path = require('path');
   app.get('/', (req, res) => {
-    res.sendFile(path.resolve('dist', 'build', 'index.html'));
+    res.sendFile(path.resolve('build', 'index.html'));
   });
 
   app.all('*', (req, res, next) => {
@@ -65,10 +68,10 @@ if (process.env.NODE_ENV === 'production') {
     }
   });
 
-  app.use(express.static(path.resolve('dist', 'build')));
+  app.use(express.static(path.resolve('build')));
 
   app.get(/^(?!\/?api).*/, (req, res) => {
-    res.sendFile(path.resolve('dist', 'build', 'index.html'));
+    res.sendFile(path.resolve('build', 'index.html'));
   });
 }
 
@@ -95,4 +98,4 @@ app.use((err: any, _req: Request, res: Response) => {
   });
 });
 
-export { app, io };
+export { app, io, server };

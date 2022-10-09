@@ -5,7 +5,11 @@ import {
   validatePassword,
   verifyJWT,
 } from '../services/session.service';
-import { createUser, getUserByUsername } from '../services/user.service';
+import {
+  createUser,
+  getUserByUsername,
+  updateUser,
+} from '../services/user.service';
 
 const sessionRouter = express.Router();
 
@@ -31,7 +35,14 @@ sessionRouter.post(
         maxAge: 1000 * 60 * 60 * 24 * 7,
       });
 
+      user.online = true;
+
       res.status(200).json(user);
+
+      await updateUser({
+        ...user,
+        online: true,
+      });
     } catch (error) {
       console.error(error);
       res.status(400).json({
@@ -44,7 +55,7 @@ sessionRouter.post(
 // logout
 sessionRouter.delete(
   '/',
-  expressAsyncHandler(async (req, res) => {
+  expressAsyncHandler(async (req: any, res) => {
     res.clearCookie('BEARER-TOKEN');
     res.status(200).json({
       message: 'Successfully logged out.',

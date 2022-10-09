@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import { useSocket } from "../../../context/ws";
 import { editServer } from "../../../redux/api";
 import { Server } from "../../../redux/api/api.types";
 import { useAppDispatch } from "../../../redux/hooks";
@@ -13,6 +14,7 @@ export default function EditServer({
   setShowModal: (show: boolean) => void;
 }) {
   const dispatch = useAppDispatch();
+  const socket = useSocket();
 
   const [name, setName] = useState(selectedServer.name);
   const [nameFocused, setNameFocused] = useState(false);
@@ -32,6 +34,12 @@ export default function EditServer({
       return;
     }
     setSelectedServer(res.payload);
+    if (socket && socket.current !== null) {
+      socket.current.emit("message", {
+        type: "replace-server",
+        data: { server: res.payload },
+      });
+    }
     setShowModal(false);
   };
 
