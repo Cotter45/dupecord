@@ -1,4 +1,5 @@
 import { ReactNode, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function ChannelContainer({
   children,
@@ -9,7 +10,8 @@ export default function ChannelContainer({
   position: "left" | "right";
   classes?: string;
 }) {
-  const [open, setOpen] = useState(true);
+  const params = useParams();
+  const [open, setOpen] = useState(position === "right" ? false : true);
 
   return (
     <>
@@ -18,7 +20,7 @@ export default function ChannelContainer({
           {open && (
             <div
               onClick={() => setOpen(false)}
-              className="w-[40px] h-[40px] bg-neutral-700 flex justify-center items-center self-end cursor-pointer z-1"
+              className="min-w-[25px] h-[40px] bg-neutral-700 flex justify-center items-center self-end cursor-pointer z-1"
             >
               <i className="fa-solid fa-chevron-right"></i>
             </div>
@@ -26,7 +28,7 @@ export default function ChannelContainer({
           {!open && (
             <div
               onClick={() => setOpen(true)}
-              className="w-[40px] h-[40px] bg-neutral-600 flex justify-center items-center self-end cursor-pointer z-1"
+              className="min-w-[25px] h-[40px] bg-neutral-600 flex justify-center items-center self-end cursor-pointer z-1"
             >
               <i className="fa-solid fa-chevron-left"></i>
             </div>
@@ -45,7 +47,7 @@ export default function ChannelContainer({
           {open && (
             <div
               onClick={() => setOpen(false)}
-              className="w-[40px] h-[40px] bg-neutral-700 flex justify-center items-center self-end cursor-pointer z-1"
+              className="min-w-[25px] h-[40px] bg-neutral-700 flex justify-center items-center self-end cursor-pointer z-1"
             >
               {position === "left" ? (
                 <i className="fa-solid fa-chevron-left"></i>
@@ -57,7 +59,7 @@ export default function ChannelContainer({
           {!open && (
             <div
               onClick={() => setOpen(true)}
-              className="w-[40px] h-[40px] bg-neutral-600 flex justify-center items-center self-end cursor-pointer z-1"
+              className="min-w-[25px] h-[40px] bg-neutral-600 flex justify-center items-center self-end cursor-pointer z-1"
             >
               {position === "left" ? (
                 <i className="fa-solid fa-chevron-right"></i>

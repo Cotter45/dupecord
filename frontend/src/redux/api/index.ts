@@ -15,6 +15,9 @@ const initialState: initialApiState = {
   myRequests: [],
   messages: {},
   likedMessages: [],
+  deafened: false,
+  muted: true,
+  camera: false,
 }
 
 export const getServers = createAsyncThunk(
@@ -299,6 +302,15 @@ export const apiSlice = createSlice({
   initialState,
   reducers: {
     resetApiState: () => initialState,
+    muteOrUnmute: (state) => {
+      state.muted = !state.muted;
+    },
+    deafenOrUndeafen: (state) => {
+      state.deafened = !state.deafened;
+    },
+    cameraOnOrOff: (state) => {
+      state.camera = !state.camera;
+    },
     replaceServer: (state, action: PayloadAction<Server>) => {
       state.servers = state.servers.map((server) => {
         if (server.id === action.payload.id) {
@@ -306,6 +318,22 @@ export const apiSlice = createSlice({
         }
         return server;
       });
+    },
+    removeServer: (state, action: PayloadAction<number>) => {
+      state.servers = state.servers.filter((server) => server.id !== +action.payload);
+    },
+    replaceMessage: (state, action: PayloadAction<Message>) => {
+      if (action.payload && action.payload.channelId) {
+          const messages = state.messages[action.payload.channelId];
+          if (messages) {
+            const message = messages.findIndex((message) => message.id === action.payload.id);
+            if (message === -1) {
+              messages.push(action.payload);
+            } else {
+              messages[message] = action.payload;
+            }
+          }
+        }
     },
     addChannelMessage: (state, action: PayloadAction<Message>) => {
       if (action.payload && action.payload.channelId) {
@@ -595,6 +623,6 @@ export const apiSlice = createSlice({
   },
 })
 
-export const { resetApiState, addChannelMessage, replaceServer } = apiSlice.actions;
+export const { resetApiState, addChannelMessage, replaceServer, muteOrUnmute, deafenOrUndeafen, cameraOnOrOff, removeServer, replaceMessage } = apiSlice.actions;
 
 export default apiSlice.reducer;

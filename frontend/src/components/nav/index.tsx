@@ -7,14 +7,14 @@ function Nav() {
   return (
     <header
       data-testid="nav_container"
-      className="w-full bg-neutral-700 p-4 flex justify-between items-center border-b border-gray-500"
+      className="w-full p-4 flex justify-between items-center border-b border-gray-500"
     >
       <div
         onClick={() => navigate("/")}
         className="text-2xl text-white cursor-pointer"
       >
         <img
-          src="/discordia.svg"
+          src="/dupecord.png"
           alt="logo"
           className="w-10 h-10 inline-block mr-2"
         />

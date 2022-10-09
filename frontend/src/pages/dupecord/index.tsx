@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import ChannelContainer from "../../components/containers/channelContainer";
-import { getServers } from "../../redux/api";
+import { deafenOrUndeafen, getServers, muteOrUnmute } from "../../redux/api";
 import { Server } from "../../redux/api/api.types";
 import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from "../../redux/hooks"
 import Channels from "./channels";
 import Servers from "./servers";
+import DupeNav from "../../components/nav/dupeNav";
 
 export default function DupeCord() {
   const dispatch = useAppDispatch();
@@ -43,6 +44,10 @@ export default function DupeCord() {
     setSelectedServer(selected);
   }, [servers, selectedServer]);
 
+  useEffect(() => {
+    window.scrollTo(0, 1);
+  }, []);
+
   return (
     <div className="fade_in w-full h-full flex relative">
       <Servers
@@ -51,7 +56,7 @@ export default function DupeCord() {
         setSelectedServer={setSelectedServer}
       />
       {selectedServer ? (
-        <ChannelContainer position={"left"}>
+        <ChannelContainer position={"left"} classes="fade_in">
           <Channels
             isAdmin={isAdmin}
             selectedServer={selectedServer}
@@ -59,7 +64,12 @@ export default function DupeCord() {
           />
         </ChannelContainer>
       ) : (
-        <ChannelContainer position={"left"}>my stuff</ChannelContainer>
+        <ChannelContainer position={"left"} classes="fade_in">
+          <div className="w-full h-[calc(100%-40px)] flex flex-col justify-center items-center overflow-hidden overflow-y-auto">
+          my stuff
+          </div>
+          <DupeNav />
+        </ChannelContainer>
       )}
       <div className="w-full h-full bg-neutral-800 overflow-x-hidden">
         <Outlet />

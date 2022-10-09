@@ -68,7 +68,7 @@ export default function Servers({
             onMouseEnter={() => setMouseOver(server.id)}
             onMouseLeave={() => setMouseOver(0)}
             key={server.id}
-            src={server.icon}
+            src='/dupecord.png'
             alt={server.name}
           />
         </div>

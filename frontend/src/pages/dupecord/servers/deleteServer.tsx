@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useSocket } from "../../../context/ws";
 import { deleteServer } from "../../../redux/api";
 import type { Server } from "../../../redux/api/api.types";
 import { useAppDispatch } from "../../../redux/hooks";
@@ -14,6 +15,7 @@ export default function DeleteServer({
 }) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const socket = useSocket();
 
   return (
     <div className="w-full flex flex-col gap-2 bg-neutral-800 p-6 rounded-md max-w-[700px]">
@@ -25,6 +27,11 @@ export default function DeleteServer({
         <button
           onClick={() => {
             dispatch(deleteServer(selectedServer.id));
+            if (socket && socket.current !== null) {
+              socket.current.emit('message', { type: 'delete-server', data: {
+                serverId: selectedServer.id,
+              }})
+            }
             setSelectedServer(undefined);
           }}
           className="w-full p-2 text-white bg-red-500 mt-4 rounded-md"

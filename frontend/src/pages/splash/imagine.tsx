@@ -1,6 +1,11 @@
+import { useLocation, useParams } from "react-router-dom";
+
 export default function Imagine() {
+  const params = useParams();
+  const location = useLocation();
+
   return (
-    <div className="relative w-[100vw] min-h-[calc(100vh-80px)] flex flex-col items-center justify-center gap-8 bg-blue-900">
+    <div className={`${location.pathname.includes('dupecord') && !params.id ? 'w-[calc(100%)]' : 'w-[100vw] bg-blue-900'} relative min-h-[calc(100vh-80px)] flex flex-col items-center justify-center gap-8`}>
       <div className="w-full max-w-[1000px] flex flex-col items-center justify-center gap-2">
         <h1>IMAGINE A PLACE</h1>
         <p className="self-center text-center max-w-[800px]">

@@ -22,7 +22,7 @@ function Router() {
         {/* <Route path="/validate-code" element={<ValidateCode />} /> */}
         <Route element={<RequireAuth />}>
           <Route path="/dupecord" element={<DupeCord />}>
-            <Route path="" element={<h1>Blank</h1>} />
+            <Route path="" element={<Splash />} />
             <Route path=":id" element={<Messages />} />
           </Route>
         </Route>

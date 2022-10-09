@@ -4,7 +4,7 @@ import { getMessages } from "../../../redux/api";
 import type { Message } from "../../../redux/api/api.types";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import CreateMessage from "./createMessage";
-import MessagesContainer from "./messages";
+import ChannelMessages from "./messages";
 
 export default function Messages() {
   const dispatch = useAppDispatch();
@@ -29,7 +29,7 @@ export default function Messages() {
 
   return (
     <div className="fade_in h-full w-full flex flex-col">
-      <MessagesContainer messages={messages} setMessages={setMessages} />
+      <ChannelMessages messages={messages} setMessages={setMessages} />
       {params.id && (
         <CreateMessage 
           messages={messages}

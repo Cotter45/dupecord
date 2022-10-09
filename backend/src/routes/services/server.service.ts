@@ -19,7 +19,7 @@ export const newServer = async (
     data: {
       name,
       private: privateServer,
-      icon: icon || '/discordia.svg',
+      icon: icon || '/dupecord.png',
       owner: {
         connect: {
           id: ownerId,

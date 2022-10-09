@@ -38,7 +38,10 @@ app.use(
 const io = new Server(server, {
   path: '/socket.io',
   cors: {
-    origin: ['http://localhost:5173', 'https://discordia.fly.dev'],
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? 'https://discordia.fly.dev'
+        : 'http://localhost:5173',
     allowedHeaders: ['BEARER-TOKEN'],
     credentials: true,
   },

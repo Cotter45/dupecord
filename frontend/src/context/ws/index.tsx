@@ -7,7 +7,7 @@ import React, {
 import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { io, Socket as IOSocket } from "socket.io-client";
-import { replaceServer, addChannelMessage } from "../../redux/api";
+import { replaceServer, addChannelMessage, removeServer, replaceMessage } from "../../redux/api";
 
 import {
   useAppDispatch,
@@ -36,14 +36,14 @@ function SocketProvider({ children }: SocketProviderProps) {
 
     let websocket = io(
       import.meta.env.MODE === "development"
-        ? "http://localhost:8000" : window.location.origin.replace(/^https/, "wss") + `/socket.io`,
+        ? "http://localhost:8000" : window.location.origin,
       {
         path: "/socket.io",
         reconnectionDelay: 1000,
         reconnection: true,
         transports: ["websocket"],
         // agent: false,
-        // upgrade: false,
+        upgrade: true,
         rejectUnauthorized: false,
         withCredentials: true,
       }
@@ -87,11 +87,19 @@ function SocketProvider({ children }: SocketProviderProps) {
       console.log(message);
 
       switch (message.type) {
-        case 'replace-server':
+        case "replace-server":
           dispatch(replaceServer(message.data));
           break;
-        case 'channel-message':
+        case "channel-message":
           dispatch(addChannelMessage(message.data.message));
+          break;
+        case "delete-server":
+          console.log("delete server", message.data);
+          dispatch(removeServer(message.data));
+          break;
+        case "replace-message":
+          console.log("like message", message.data);
+          dispatch(replaceMessage(message.data));
           break;
         case "notification":
           if (localStorage.getItem("notificationSounds") === "true") {

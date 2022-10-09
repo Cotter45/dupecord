@@ -54,7 +54,7 @@ export default function NavMenu() {
         style={{
           maxWidth: isOpen ? "350px" : "0px",
         }}
-        className="menu bg-neutral-700 flex flex-col gap-4 pb-10 border-t border-l border-neutral-600"
+        className="menu bg-neutral-800 flex flex-col gap-4 pb-10 border-l border-neutral-600"
       >
         <section className="flex flex-col justify-evenly">
           {!user ? (

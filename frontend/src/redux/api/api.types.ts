@@ -14,6 +14,9 @@ export interface initialApiState {
     [key: number]: Message[];
   };
   likedMessages: number[];
+  deafened: boolean;
+  muted: boolean;
+  camera: boolean;
 }
 
 export interface Server {

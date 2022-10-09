@@ -28,7 +28,7 @@ export const createUser = async (
           password: hashedPassword,
         },
       },
-      profilePicture: profilePicture || '/discordia.svg',
+      profilePicture: profilePicture || '/dupecord.png',
     },
     include: {
       servers: true,

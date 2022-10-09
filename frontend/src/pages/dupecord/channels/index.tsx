@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 
 import { Modal } from "../../../context/modal/modal";
 import type { Category, Channel, Server } from "../../../redux/api/api.types";
-import { useAppSelector } from "../../../redux/hooks";
 import CreateCategory from "../categories/createCategory";
 import ManageCategories from "../categories/manageCategories";
 import DeleteServer from "../servers/deleteServer";
@@ -13,6 +12,7 @@ import ChannelAdmin from "./channelAdmin";
 import CreateChannel from "./createChannel";
 import DeleteChannel from "./deleteChannel";
 import EditChannel from "./editChannel";
+import DupeNav from "../../../components/nav/dupeNav";
 
 export default function Channels({
   isAdmin,
@@ -32,14 +32,10 @@ export default function Channels({
   const [channel, setChannel] = useState<Channel>();
   const [categoryId, setCategoryId] = useState(0);
   const [channelHover, setChannelHover] = useState(0);
-  const [muted, setMuted] = useState(false);
-  const [deafened, setDeafened] = useState(false);
 
   useEffect(() => {
     setCategories(selectedServer.categories);
   }, [selectedServer]);
-
-  const user = useAppSelector((state) => state.session.user);
 
   return (
     <div className="fade_in w-full h-full flex flex-col justify-between gap-10">
@@ -77,8 +73,8 @@ export default function Channels({
                   to={`/dupecord/${channel.id}`}
                   onMouseEnter={() => setChannelHover(channel.id)}
                   onMouseLeave={() => setChannelHover(0)}
-                  className={`relative w-[90%] self-end p-1 cursor-pointer transform transition-all duration-300 text-sm 0 flex justify-between items-center  text-neutral-200 hover:text-teal-400 ${params.id && +params.id === channel.id &&
-                    "text-teal-400"
+                  className={`relative w-[90%] self-end p-1 cursor-pointer transform transition-all duration-300 text-sm 0 flex justify-between items-center  text-neutral-200 hover:text-teal-400 ${
+                    params.id && +params.id === channel.id && "text-teal-400"
                   }`}
                   key={channel.id}
                 >
@@ -173,35 +169,7 @@ export default function Channels({
           )}
         </Modal>
       )}
-      <div className="sticky bottom-0 z-1 w-full h-[40px] justify-self-end self-end flex justify-between items-center p-2 border-t border-neutral-400 bg-neutral-800">
-        <label className="text-lg text-neutral-300 truncate">
-          {user?.username}
-        </label>
-        <div className="flex flex-row gap-2 px-2">
-          {muted ? (
-            <i
-              onClick={() => setMuted(false)}
-              className="fa-solid fa-microphone-slash text-red-700 cursor-pointer"
-            ></i>
-          ) : (
-            <i
-              onClick={() => setMuted(true)}
-              className="fa-solid fa-microphone text-neutral-300 cursor-pointer"
-            ></i>
-          )}
-          {deafened ? (
-            <i
-              onClick={() => setDeafened(false)}
-              className="fa-solid fa-phone-slash text-red-700 cursor-pointer"
-            ></i>
-          ) : (
-            <i
-              onClick={() => setDeafened(true)}
-              className="fa-solid fa-phone text-neutral-300 cursor-pointer"
-            ></i>
-          )}
-        </div>
-      </div>
+      <DupeNav />
     </div>
   );
 }

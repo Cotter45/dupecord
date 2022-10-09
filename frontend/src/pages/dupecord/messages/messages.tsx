@@ -1,4 +1,4 @@
-import { FormEvent, MutableRefObject, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 import useOnScreen from "../../../util/useOnScreen";
 import type { Message } from "../../../redux/api/api.types";
@@ -7,8 +7,10 @@ import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { deleteMessage, likeMessage, unlikeMessage, updateMessage } from "../../../redux/api";
 import { Modal } from "../../../context/modal/modal";
 import { useParams } from "react-router-dom";
+import MessagesContainer from "../../../components/containers/messagesContainer";
+import { useSocket } from "../../../context/ws";
 
-export default function MessagesContainer({
+export default function ChannelMessages({
   messages,
   setMessages,
 }: {
@@ -18,6 +20,7 @@ export default function MessagesContainer({
   const dispatch = useAppDispatch();
   const params: { id?: number } = useParams();
   const paginationRef = useRef<any>(null);
+  const socket = useSocket();
 
   const isIntersecting = useOnScreen(
     paginationRef,
@@ -87,15 +90,13 @@ export default function MessagesContainer({
   }, [messages, params.id]);
 
   return (
-    <div
-      id="messages-container"
-      style={{ borderRadius: "0 0 5px 5px" }}
-      className="fade_in w-[calc(100%)] h-full overflow-hidden overflow-y-auto flex flex-col-reverse py-4 "
-    >
+    <MessagesContainer>
       {messages.length === 0 && (
         <div className="relative w-full flex justify-center items-center">
           <div className="absolute top-0 left-0 -translate-y-[45%] w-full h-full border-b border-dashed border-neutral-400" />
-          <h1 className="absolute text-xl text-neutral-300 bg-neutral-800 p-4">No messages yet!</h1>
+          <h1 className="absolute text-xl text-neutral-300 bg-neutral-800 p-4">
+            No messages yet!
+          </h1>
         </div>
       )}
       {messages
@@ -123,23 +124,35 @@ export default function MessagesContainer({
                   <div className="flex items-center">
                     {user && (
                       <i
-                        onClick={() => {
+                        onClick={async () => {
                           const liked = likedMessages.includes(message.id);
                           if (!liked) {
-                            dispatch(
+                            const res = await dispatch(
                               likeMessage({
                                 messageId: message.id,
                                 userId: user.id,
                               })
                             );
+                            if (res && socket && socket.current !== null) {
+                              socket.current.emit('message', { type: 'replace-message', data: {
+                                message: res.payload.message,
+                                serverId: params && params.id,
+                              }})
+                            }
                             return;
                           }
-                          dispatch(
+                          const res = await dispatch(
                             unlikeMessage({
                               messageId: message.id,
                               userId: user.id,
                             })
                           );
+                          if (res && socket && socket.current !== null) {
+                            socket.current.emit('message', { type: 'replace-message', data: {
+                              message: res.payload.message,
+                              serverId: params && params.id,
+                            }})
+                          }
                         }}
                         className={`fa-solid fa-heart text-xs pl-2 cursor-pointer hover:scale-125 transition-all ease-in-out duration-500 ${
                           likedMessages.includes(message.id)
@@ -240,6 +253,6 @@ export default function MessagesContainer({
           </div>
         </Modal>
       )}
-    </div>
+    </MessagesContainer>
   );
 }
