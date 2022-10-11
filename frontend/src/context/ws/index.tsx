@@ -58,47 +58,40 @@ function SocketProvider({ children }: SocketProviderProps) {
       // socket.current = websocket;
     });
 
-    websocket.on('error', async (e) => {
-      if (import.meta.env.NODE_ENV !== "production") {
-        console.error(e);
-      }
-      // TO DO create notification window to reconnect
-      // await dispatch(logout())
-      navigate("/");
-    });
-
     websocket.on('disconnect', async (e) => {
       console.log("Socket Close");
       if (socket.current && typeof socket.current !== "function") {
         socket.current.close();
         socket.current = null;
       }
-      // TO DO create notification window to reconnect
-      // await dispatch(logout())
-      const notification = {
-        type: "websocket-disconnect",
-        id: 999999999999999,
-      };
-      // dispatch(setNotification(notification));
-      navigate("/");
+      window.location.reload();
     });
 
     websocket.on('message', async (message) => {
-      console.log(message);
+      if (import.meta.env.MODE === 'development') {
+        console.log(message);
+      }
 
       switch (message.type) {
         case "replace-server":
           dispatch(replaceServer(message.data));
           break;
         case "channel-message":
+          if (
+            localStorage.getItem("messageSounds") === "true" &&
+            message.to.id === user.id
+          ) {
+            const messageAudio = new Audio(
+              "http://commondatastorage.googleapis.com/codeskulptor-assets/week7-brrring.m4a"
+            );
+            messageAudio.play();
+          }
           dispatch(addChannelMessage(message.data.message));
           break;
         case "delete-server":
-          console.log("delete server", message.data);
           dispatch(removeServer(message.data));
           break;
         case "replace-message":
-          console.log("like message", message.data);
           dispatch(replaceMessage(message.data));
           break;
         case "notification":
@@ -122,18 +115,6 @@ function SocketProvider({ children }: SocketProviderProps) {
           return;
         case "decline-chat":
           // dispatch(setNotification(payload));
-          return;
-        case "new-message":
-          if (
-            localStorage.getItem("messageSounds") === "true" &&
-            message.to.id === user.id
-          ) {
-            const messageAudio = new Audio(
-              "http://commondatastorage.googleapis.com/codeskulptor-assets/week7-brrring.m4a"
-            );
-            messageAudio.play();
-          }
-          // dispatch(addMessage(payload));
           return;
         default:
           return;

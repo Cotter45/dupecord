@@ -55,6 +55,15 @@ export default function ChannelMessages({
         }
         return message;
       }));
+      if (socket && socket.current !== null) {
+        socket.current.emit("message", {
+          type: 'replace-message',
+          data: {
+            message: res.payload,
+            serverId: params && params.id,
+          }
+        });
+      }
     }
     setEdit(false);
   };

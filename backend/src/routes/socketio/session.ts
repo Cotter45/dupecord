@@ -24,16 +24,17 @@ export const handleLogin = async (data: any, cache: any, socket: any) => {
   } else {
     cache.set('online', [{ email: user.email, socketId: socket.id }]);
   }
-  console.log(online);
 
   if (user) {
     const flatServers = user.servers
       .concat(user.myServers)
       .map((server: any) => {
-        // join server rooms by id
-        socket.join(`server-${server.id}`);
         return server.id;
       });
+    for (const serverId of flatServers) {
+      // join server rooms by id
+      await socket.join(`server-${serverId}`);
+    }
     const flatFriends = user.friends.map((friend: any) => {
       if (online) {
         const friendSocket: any = online.find(

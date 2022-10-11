@@ -16,7 +16,6 @@ export default function DupeNav() {
   const deafened = useAppSelector((state) => state.api.deafened);
 
   const [isOpen, setIsOpen] = useState(false);
-  console.log(isOpen);
 
   return (
     <div className="sticky bottom-0 z-1 w-full h-[40px] justify-self-end self-end flex justify-between items-center p-2 border-t border-neutral-400 bg-neutral-800">

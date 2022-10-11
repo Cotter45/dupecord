@@ -65,7 +65,7 @@ export default function NavMenu() {
                   setIsOpen(!isOpen);
                   navigate("/signup");
                 }}
-                className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-800 transition-all ease-in-out duration-500 text-white"
+                className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-700 transition-all ease-in-out duration-500 text-white"
               >
                 Sign Up
               </div>
@@ -75,7 +75,7 @@ export default function NavMenu() {
                   setIsOpen(!isOpen);
                   navigate("/login");
                 }}
-                className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-800 transition-all ease-in-out duration-500 text-white"
+                className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-700 transition-all ease-in-out duration-500 text-white"
               >
                 Log In
               </div>
@@ -89,7 +89,7 @@ export default function NavMenu() {
                     setIsOpen(!isOpen);
                     navigate("/dupecord");
                   }}
-                  className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-800 transition-all ease-in-out duration-500 text-white"
+                  className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-700 transition-all ease-in-out duration-500 text-white"
                 >
                   Dupecord
                 </div>
@@ -101,7 +101,7 @@ export default function NavMenu() {
                     setIsOpen(!isOpen);
                     navigate("/");
                   }}
-                  className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-800 transition-all ease-in-out duration-500 text-white"
+                  className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-700 transition-all ease-in-out duration-500 text-white"
                 >
                   Splash Page
                 </div>
@@ -114,7 +114,7 @@ export default function NavMenu() {
                   await dispatch(logout());
                   navigate("/login");
                 }}
-                className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-800 transition-all ease-in-out duration-500 text-white"
+                className="w-full h-14 flex justify-center items-center whitespace-nowrap text-xl cursor-pointer border-b border-neutral-600 hover:bg-neutral-700 transition-all ease-in-out duration-500 text-white"
               >
                 Log Out
               </div>
