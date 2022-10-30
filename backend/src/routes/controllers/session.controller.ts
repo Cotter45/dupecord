@@ -20,7 +20,7 @@ sessionRouter.post(
     try {
       const { username, password } = req.body;
 
-      const user = await getUserByUsername(username);
+      const user: any = await getUserByUsername(username);
       if (!user) throw new Error('No user found');
 
       const isValid = await validatePassword(user.id, password);
@@ -36,6 +36,7 @@ sessionRouter.post(
       });
 
       user.online = true;
+      user.token = token;
 
       res.status(200).json(user);
 
@@ -56,9 +57,22 @@ sessionRouter.post(
 sessionRouter.delete(
   '/',
   expressAsyncHandler(async (req: any, res) => {
+    const token = req.cookies['BEARER-TOKEN']
+      ? req.cookies['BEARER-TOKEN']
+      : req.headers['authorization'];
+    if (!token) throw new Error('No token found');
+
     res.clearCookie('BEARER-TOKEN');
     res.status(200).json({
       message: 'Successfully logged out.',
+    });
+    const result = await verifyJWT(token);
+    if (!result) throw new Error('Invalid token.');
+    const { user } = result;
+
+    await updateUser({
+      ...user,
+      online: false,
     });
   }),
 );
@@ -68,7 +82,9 @@ sessionRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
     try {
-      const token = req.cookies['BEARER-TOKEN'];
+      const token = req.cookies['BEARER-TOKEN']
+        ? req.cookies['BEARER-TOKEN']
+        : req.headers['authorization'];
       if (!token || typeof token !== 'string') {
         throw new Error('Invalid token.');
       }
@@ -105,7 +121,7 @@ sessionRouter.post(
       const userEmail = await getUserByUsername(email);
       if (userEmail) throw new Error('Email already exists');
 
-      const user = await createUser(username, email, password);
+      const user: any = await createUser(username, email, password);
 
       const token = createJWT(user);
 
@@ -115,6 +131,9 @@ sessionRouter.post(
         secure: process.env.NODE_ENV === 'production',
         maxAge: 1000 * 60 * 60 * 24 * 7,
       });
+
+      user.online = true;
+      user.token = token;
 
       res.status(200).json(user);
     } catch (error) {

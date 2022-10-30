@@ -26,7 +26,9 @@ export default function SearchServer({
     e.preventDefault();
     if (!value || !value.length) return;
 
-    const res = await authFetch(`/api/servers/search?name=${value}`);
+    const res = await authFetch(
+      `http://localhost:8000/api/servers/search?name=${value}`
+    );
     if (res.message) {
       setError(res.message);
       return;
@@ -37,12 +39,18 @@ export default function SearchServer({
   };
 
   return (
-    <div className={`w-full max-w-[80vw] h-full max-h-[80vh] flex flex-col items-center bg-neutral-800 text-white p-4 rounded-md overflow-y-auto ${results.length ? 'justify-start' : 'justify-center'}`}>
+    <div
+      className={`w-full max-w-[80vw] h-full max-h-[80vh] flex flex-col items-center bg-neutral-800 text-white p-4 rounded-md overflow-y-auto ${
+        results.length ? "justify-start" : "justify-center"
+      }`}
+    >
       <h2 className="text-2xl text-left w-full max-w-[600px]">
         Search for servers
       </h2>
       <p className="text-gray-400 max-w-[600px] text-sm">
-        Enter the name of the server you're looking for and select it from the list that will populate below. If the server is private, a request will be sent to the server owner to join.
+        Enter the name of the server you're looking for and select it from the
+        list that will populate below. If the server is private, a request will
+        be sent to the server owner to join.
       </p>
       <form
         onSubmit={handleSubmit}
@@ -102,7 +110,9 @@ export default function SearchServer({
                     </p>
                   )}
                   {server.private && (
-                    <p className="text-red-600 text-xs justify-self-end">Private</p>
+                    <p className="text-red-600 text-xs justify-self-end">
+                      Private
+                    </p>
                   )}
                 </div>
               </div>

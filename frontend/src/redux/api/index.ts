@@ -13,6 +13,7 @@ const initialState: initialApiState = {
   friends: [],
   requests: [],
   myRequests: [],
+  currentChannel: undefined,
   messages: {},
   likedMessages: [],
   deafened: false,
@@ -22,9 +23,13 @@ const initialState: initialApiState = {
 
 export const getServers = createAsyncThunk(
   'api/getServers',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
+    console.log('USER', user);
     try {
-      const data = await authFetch('/api/servers');
+      const data = await authFetch('http://localhost:8000/api/servers', {}, user.token);
       if (data) {
         return data;
       }
@@ -35,12 +40,15 @@ export const getServers = createAsyncThunk(
 
 export const createServer = createAsyncThunk(
   'api/createServer',
-  async (server: Partial<Server>, { rejectWithValue }) => {
+  async (server: Partial<Server>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch('/api/servers', {
+      const data = await authFetch('http://localhost:8000/api/servers', {
         method: 'POST',
         body: JSON.stringify(server),
-      });
+      }, user.token);
       if (data) {
         return data;
       }
@@ -51,11 +59,14 @@ export const createServer = createAsyncThunk(
 
 export const joinServer = createAsyncThunk(
   'api/joinServer',
-  async (serverId: number, { rejectWithValue }) => {
+  async (serverId: number, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/servers/${serverId}/join`, {
+      const data = await authFetch(`http://localhost:8000/api/servers/${serverId}/join`, {
         method: 'POST',
-      });
+      }, user.token);
       if (data) {
         return data;
       }
@@ -66,12 +77,15 @@ export const joinServer = createAsyncThunk(
 
 export const editServer = createAsyncThunk(
   'api/editServer',
-  async (server: Partial<Server>, { rejectWithValue }) => {
+  async (server: Partial<Server>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/servers/${server.id}`, {
+      const data = await authFetch(`http://localhost:8000/api/servers/${server.id}`, {
         method: 'PATCH',
         body: JSON.stringify(server),
-      });
+      }, user.token);
       if (data) {
         return data;
       }
@@ -82,11 +96,14 @@ export const editServer = createAsyncThunk(
 
 export const deleteServer = createAsyncThunk(
   'api/deleteServer',
-  async (serverId: number, { rejectWithValue }) => {
+  async (serverId: number, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/servers/${serverId}`, {
+      const data = await authFetch(`http://localhost:8000/api/servers/${serverId}`, {
         method: 'DELETE',
-      });
+      }, user.token);
       if (data) {
         return data;
       }
@@ -97,12 +114,15 @@ export const deleteServer = createAsyncThunk(
 
 export const createChannel = createAsyncThunk(
   'api/createChannel',
-  async (channel: Partial<Channel>, { rejectWithValue }) => {
+  async (channel: Partial<Channel>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch('/api/channels', {
+      const data = await authFetch('http://localhost:8000/api/channels', {
         method: 'POST',
         body: JSON.stringify(channel),
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -113,12 +133,15 @@ export const createChannel = createAsyncThunk(
 
 export const editChannel = createAsyncThunk(
   'api/editChannel',
-  async (channel: Partial<Channel>, { rejectWithValue }) => {
+  async (channel: Partial<Channel>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/channels/${channel.id}`, {
+      const data = await authFetch(`http://localhost:8000/api/channels/${channel.id}`, {
         method: 'PATCH',
         body: JSON.stringify(channel),
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -129,12 +152,15 @@ export const editChannel = createAsyncThunk(
 
 export const deleteChannel = createAsyncThunk(
   'api/deleteChannel',
-  async (channel: Partial<Channel>, { rejectWithValue }) => {
+  async (channel: Partial<Channel>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/channels/${channel.id}`, {
+      const data = await authFetch(`http://localhost:8000/api/channels/${channel.id}`, {
         method: 'DELETE',
         body: JSON.stringify({ serverId: channel.serverId }),
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -145,12 +171,15 @@ export const deleteChannel = createAsyncThunk(
 
 export const createCategory = createAsyncThunk(
   'api/createCategory',
-  async (category: Partial<Category>, { rejectWithValue }) => {
+  async (category: Partial<Category>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch('/api/categories', {
+      const data = await authFetch('http://localhost:8000/api/categories', {
         method: 'POST',
         body: JSON.stringify(category),
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -161,12 +190,15 @@ export const createCategory = createAsyncThunk(
 
 export const editCategory = createAsyncThunk(
   'api/editCategory',
-  async (category: Partial<Category>, { rejectWithValue }) => {
+  async (category: Partial<Category>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/categories/${category.id}`, {
+      const data = await authFetch(`http://localhost:8000/api/categories/${category.id}`, {
         method: 'PATCH',
         body: JSON.stringify(category),
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -177,12 +209,15 @@ export const editCategory = createAsyncThunk(
 
 export const deleteCategory = createAsyncThunk(
   'api/deleteCategory',
-  async (category: Partial<Category>, { rejectWithValue }) => {
+  async (category: Partial<Category>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/categories/${category.id}`, {
+      const data = await authFetch(`http://localhost:8000/api/categories/${category.id}`, {
         method: 'DELETE',
         body: JSON.stringify({ serverId: category.serverId }),
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -193,9 +228,12 @@ export const deleteCategory = createAsyncThunk(
 
 export const getMessages = createAsyncThunk(
   'api/getMessages',
-  async ({ channelId, skip, take }: { channelId: number, skip: number, take: number }, { rejectWithValue }) => {
+  async ({ channelId, skip, take }: { channelId: number, skip: number, take: number }, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/messages/${channelId}?skip=${skip}&take=${take}`);
+      const data = await authFetch(`http://localhost:8000/api/messages/${channelId}?skip=${skip}&take=${take}`, {}, user.token);
       if (data) {
         return data;
       }
@@ -206,12 +244,15 @@ export const getMessages = createAsyncThunk(
 
 export const createChannelMessage = createAsyncThunk(
   'api/createChannelMessage',
-  async (message: Partial<Message>, { rejectWithValue }) => {
+  async (message: Partial<Message>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch('/api/messages/channel', {
+      const data = await authFetch('http://localhost:8000/api/messages/channel', {
         method: 'POST',
         body: JSON.stringify(message),
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -222,12 +263,15 @@ export const createChannelMessage = createAsyncThunk(
 
 export const updateMessage = createAsyncThunk(
   'api/updateMessage',
-  async (message: Partial<Message>, { rejectWithValue }) => {
+  async (message: Partial<Message>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/messages/${message.id}`, {
+      const data = await authFetch(`http://localhost:8000/api/messages/${message.id}`, {
         method: 'PATCH',
         body: JSON.stringify(message),
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -238,11 +282,14 @@ export const updateMessage = createAsyncThunk(
 
 export const deleteMessage = createAsyncThunk(
   'api/deleteMessage',
-  async (message: Partial<Message>, { rejectWithValue }) => {
+  async (message: Partial<Message>, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/messages/${message.id}`, {
+      const data = await authFetch(`http://localhost:8000/api/messages/${message.id}`, {
         method: 'DELETE',
-      });
+      }, user.token);
       if (data && data.id) {
         return data;
       }
@@ -253,9 +300,12 @@ export const deleteMessage = createAsyncThunk(
 
 export const getLikedMesssages = createAsyncThunk(
   'api/getLikedMesssages',
-  async (userId: number, { rejectWithValue }) => {
+  async (userId: number, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch(`/api/likes/${userId}`);
+      const data = await authFetch(`http://localhost:8000/api/likes/${userId}`, {}, user.token);
       if (data) {
         return data;
       }
@@ -266,12 +316,15 @@ export const getLikedMesssages = createAsyncThunk(
 
 export const likeMessage = createAsyncThunk(
   'api/likeMessage',
-  async ({ userId, messageId }: { userId: number; messageId: number }, { rejectWithValue }) => {
+  async ({ userId, messageId }: { userId: number; messageId: number }, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch('/api/likes/like', {
+      const data = await authFetch('http://localhost:8000/api/likes/like', {
         method: 'POST',
         body: JSON.stringify({ userId, messageId }),
-      });
+      }, user.token);
       if (data && data.messageId) {
         return data;
       }
@@ -282,12 +335,15 @@ export const likeMessage = createAsyncThunk(
 
 export const unlikeMessage = createAsyncThunk(
   'api/unlikeMessage',
-  async ({ userId, messageId }: { userId: number; messageId: number }, { rejectWithValue }) => {
+  async ({ userId, messageId }: { userId: number; messageId: number }, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch('/api/likes/unlike', {
+      const data = await authFetch('http://localhost:8000/api/likes/unlike', {
         method: 'DELETE',
         body: JSON.stringify({ userId, messageId }),
-      });
+      }, user.token);
       if (data && data.messageId) {
         return data;
       }
@@ -343,6 +399,9 @@ export const apiSlice = createSlice({
           state.messages[action.payload.channelId] = [action.payload];
         }
       }
+    },
+    setCurrentChannel: (state, action: PayloadAction<Channel | undefined>) => {
+      state.currentChannel = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -623,6 +682,6 @@ export const apiSlice = createSlice({
   },
 })
 
-export const { resetApiState, addChannelMessage, replaceServer, muteOrUnmute, deafenOrUndeafen, cameraOnOrOff, removeServer, replaceMessage } = apiSlice.actions;
+export const { resetApiState, addChannelMessage, replaceServer, muteOrUnmute, deafenOrUndeafen, cameraOnOrOff, removeServer, replaceMessage, setCurrentChannel } = apiSlice.actions;
 
 export default apiSlice.reducer;

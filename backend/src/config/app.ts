@@ -41,19 +41,37 @@ const io = new Server(server, {
     origin:
       process.env.NODE_ENV === 'production'
         ? 'https://discordia.fly.dev'
-        : 'http://localhost:5173',
-    allowedHeaders: ['BEARER-TOKEN'],
+        : ['http://localhost:5173', 'http://localhost:1420'],
+    allowedHeaders: ['BEARER-TOKEN', 'authorization'],
     credentials: true,
   },
-  allowRequest: async (req, callback) => {
-    try {
-      const token = req.headers['cookie'].split('BEARER-TOKEN=')[1];
-      const isValid = await validateJWT(token);
-      callback(null, isValid);
-    } catch (e) {
-      console.error(e);
+  // allowRequest: async (req, callback) => {
+  //   try {
+  //     const token = req.headers['cookie'].split('BEARER-TOKEN=')[1];
+  //     const isValid = await validateJWT(token);
+  //     callback(null, isValid);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // },
+});
+
+io.use(async (socket, next) => {
+  try {
+    const token =
+      socket.handshake.auth.token ||
+      socket.handshake.headers['cookie'].split('BEARER-TOKEN=')[1];
+    if (!token) {
+      return next(new Error('Invalid request.'));
     }
-  },
+    if (await validateJWT(token)) {
+      next();
+    } else {
+      next(new Error('Socket authentication error'));
+    }
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 // Static routes

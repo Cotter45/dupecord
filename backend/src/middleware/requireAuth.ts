@@ -8,7 +8,9 @@ const { jwtConfig } = config;
 const { jwtSecret } = jwtConfig;
 
 export async function requireAuth(req: any, res: Response, next: NextFunction) {
-  const token = req.cookies['BEARER-TOKEN'];
+  const token = req.cookies['BEARER-TOKEN']
+    ? req.cookies['BEARER-TOKEN']
+    : req.headers['authorization'];
 
   if (!token) {
     return res.status(401).json({

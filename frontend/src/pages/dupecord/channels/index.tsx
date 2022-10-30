@@ -13,6 +13,8 @@ import CreateChannel from "./createChannel";
 import DeleteChannel from "./deleteChannel";
 import EditChannel from "./editChannel";
 import DupeNav from "../../../components/nav/dupeNav";
+import { useAppDispatch } from "../../../redux/hooks";
+import { setCurrentChannel } from "../../../redux/api";
 
 export default function Channels({
   isAdmin,
@@ -24,6 +26,7 @@ export default function Channels({
   setSelectedServer: (server: Server | undefined) => void;
 }) {
   const params: { id?: number } = useParams();
+  const dispatch = useAppDispatch();
 
   const [categories, setCategories] = useState<Category[]>();
   const [viewOptions, setViewOptions] = useState(false);
@@ -71,6 +74,7 @@ export default function Channels({
               .map((channel) => (
                 <NavLink
                   to={`/dupecord/${channel.id}`}
+                  onClick={() => dispatch(setCurrentChannel(channel))}
                   onMouseEnter={() => setChannelHover(channel.id)}
                   onMouseLeave={() => setChannelHover(0)}
                   className={`relative w-[90%] self-end p-1 cursor-pointer transform transition-all duration-300 text-sm 0 flex justify-between items-center  text-neutral-200 hover:text-teal-400 ${

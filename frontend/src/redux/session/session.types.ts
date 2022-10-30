@@ -11,6 +11,7 @@ export interface User {
   username: string;
   profilePicture: string;
   bio?: string;
+  token: string;
 
   createdAt: Date;
   updatedAt: Date;

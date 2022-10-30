@@ -4,7 +4,12 @@ import useOnScreen from "../../../util/useOnScreen";
 import type { Message } from "../../../redux/api/api.types";
 import { authFetch } from "../../../util/authFetch";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { deleteMessage, likeMessage, unlikeMessage, updateMessage } from "../../../redux/api";
+import {
+  deleteMessage,
+  likeMessage,
+  unlikeMessage,
+  updateMessage,
+} from "../../../redux/api";
 import { Modal } from "../../../context/modal/modal";
 import { useParams } from "react-router-dom";
 import MessagesContainer from "../../../components/containers/messagesContainer";
@@ -22,13 +27,10 @@ export default function ChannelMessages({
   const paginationRef = useRef<any>(null);
   const socket = useSocket();
 
-  const isIntersecting = useOnScreen(
-    paginationRef,
-    "0px",
-  );
+  const isIntersecting = useOnScreen(paginationRef, "0px");
 
   const [edit, setEdit] = useState(false);
-  const [messageEdit, setMessageEdit] = useState('');
+  const [messageEdit, setMessageEdit] = useState("");
   const [messageMark, setMessageMark] = useState<Message | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [noMoar, setNoMoar] = useState(false);
@@ -43,25 +45,29 @@ export default function ChannelMessages({
       return;
     }
 
-    const res = await dispatch(updateMessage({
-      ...messageMark,
-      content: messageEdit,
-    }));
+    const res = await dispatch(
+      updateMessage({
+        ...messageMark,
+        content: messageEdit,
+      })
+    );
 
     if (res && res.payload) {
-      setMessages(messages.map((message) => {
-        if (message.id === messageMark?.id) {
-          return res.payload;
-        }
-        return message;
-      }));
+      setMessages(
+        messages.map((message) => {
+          if (message.id === messageMark?.id) {
+            return res.payload;
+          }
+          return message;
+        })
+      );
       if (socket && socket.current !== null) {
         socket.current.emit("message", {
-          type: 'replace-message',
+          type: "replace-message",
           data: {
             message: res.payload,
             serverId: params && params.id,
-          }
+          },
         });
       }
     }
@@ -82,11 +88,15 @@ export default function ChannelMessages({
   };
 
   useEffect(() => {
+    if (!user) return;
+
     if (isIntersecting) {
       (async () => {
         if (!messages.length) return;
         if (noMoar) return;
-        const moreMessages = await authFetch(`/api/messages/${params.id}?skip=${messages.length}&take=10`);
+        const moreMessages = await authFetch(
+          `http://localhost:8000/api/messages/${params.id}?skip=${messages.length}&take=10`, {}, user.token
+        );
 
         if (!moreMessages.messages.length) return setNoMoar(true);
         setMessages([...messages, ...moreMessages.messages]);
@@ -143,10 +153,13 @@ export default function ChannelMessages({
                               })
                             );
                             if (res && socket && socket.current !== null) {
-                              socket.current.emit('message', { type: 'replace-message', data: {
-                                message: res.payload.message,
-                                serverId: params && params.id,
-                              }})
+                              socket.current.emit("message", {
+                                type: "replace-message",
+                                data: {
+                                  message: res.payload.message,
+                                  serverId: params && params.id,
+                                },
+                              });
                             }
                             return;
                           }
@@ -157,10 +170,13 @@ export default function ChannelMessages({
                             })
                           );
                           if (res && socket && socket.current !== null) {
-                            socket.current.emit('message', { type: 'replace-message', data: {
-                              message: res.payload.message,
-                              serverId: params && params.id,
-                            }})
+                            socket.current.emit("message", {
+                              type: "replace-message",
+                              data: {
+                                message: res.payload.message,
+                                serverId: params && params.id,
+                              },
+                            });
                           }
                         }}
                         className={`fa-solid fa-heart text-xs pl-2 cursor-pointer hover:scale-125 transition-all ease-in-out duration-500 ${

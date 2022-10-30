@@ -9,6 +9,7 @@ export interface initialApiState {
   friends: User[];
   requests: Request[];
   myRequests: Request[];
+  currentChannel: Channel | undefined;
   messages: {
     // channelId
     [key: number]: Message[];

@@ -46,6 +46,9 @@ function SocketProvider({ children }: SocketProviderProps) {
         upgrade: true,
         rejectUnauthorized: false,
         withCredentials: true,
+        auth: {
+          token: user.token
+        }
       }
     );
     websocket.emit('message', {

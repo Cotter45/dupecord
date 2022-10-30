@@ -14,13 +14,13 @@ export const login = createAsyncThunk(
   'session/login',
   async ({ username, password }: { username: string, password: string }, { rejectWithValue }) => {
     try {
-      const data = await authFetch('/api/session', {
+      const data = await authFetch('http://localhost:8000/api/session', {
         method: 'POST',
         body: JSON.stringify({ username, password }),
       });
       if (data && data.id) {
         interval = setInterval(() => {
-          authFetch('/api/session')
+          authFetch('http://localhost:8000/api/session')
             .then((res) => {
               if (!res) {
                 clearInterval(interval);
@@ -37,17 +37,20 @@ export const login = createAsyncThunk(
 
 export const restore = createAsyncThunk(
   'session/restore',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
+    const state = getState() as any;
+    const { session } = state;
+    const { user } = session;
     try {
-      const data = await authFetch('/api/session');
+      const data = await authFetch('http://localhost:8000/api/session');
       if (data && data.id) {
         interval = setInterval(() => {
-          authFetch('/api/session')
+          authFetch('http://localhost:8000/api/session')
             .then((res) => {
               if (!res) {
                 clearInterval(interval);
               }
-            });
+            }, user.token);
         }, 1000 * 60 * 25); // 25 minutes
         return data;
       };
@@ -61,14 +64,14 @@ export const signup = createAsyncThunk(
   'session/signupUser',
   async (user: Partial<User>, { rejectWithValue }) => {
     try {
-      const data = await authFetch('/api/session/signup', {
+      const data = await authFetch('http://localhost:8000/api/session/signup', {
         method: 'POST',
         body: JSON.stringify(user),
       });
 
       if (data && !data.message && data.id) {
         interval = setInterval(() => {
-          authFetch('/api/session')
+          authFetch('http://localhost:8000/api/session')
             .then((res) => {
               if (!res) {
                 clearInterval(interval);
@@ -84,7 +87,7 @@ export const signup = createAsyncThunk(
 );
 
 export const logout = (): AppThunk => async (dispatch: (arg0: { payload: undefined; type: string; }) => void) => {
-  const data = await authFetch('/api/session', {
+  const data = await authFetch('http://localhost:8000/api/session', {
     method: 'DELETE',
   });
   if (data) {

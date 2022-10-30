@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-export async function authFetch(url: string, options: any = {}) {
+export async function authFetch(url: string, options: any = {}, token?: string) {
   // set options.method to 'GET' if there is no method
   options.method = options.method || 'GET';
   // set options.headers to an empty object if there is no headers
@@ -20,9 +20,12 @@ export async function authFetch(url: string, options: any = {}) {
       options.headers['Keep-Alive'] =
         options.headers['Keep-Alive'] || 'timeout=60, max=100';
     }
-    options.headers['XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
-    options.headers['BEARER-TOKEN'] = Cookies.get('BEARER-TOKEN');
+    if (!token) {
+      options.headers['XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
+      options.headers['BEARER-TOKEN'] = Cookies.get('BEARER-TOKEN');
+    }
   }
+  options.headers['authorization'] = token;
   // call the default window's fetch with the url and the options passed in
   const res: any = await window.fetch(url, options);
 
