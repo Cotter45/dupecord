@@ -27,9 +27,8 @@ export const getServers = createAsyncThunk(
     const state = getState() as any;
     const { session } = state;
     const { user } = session;
-    console.log('USER', user);
     try {
-      const data = await authFetch('http://localhost:8000/api/servers', {}, user.token);
+      const data = await authFetch('/api/servers', {}, user.token);
       if (data) {
         return data;
       }
@@ -45,7 +44,7 @@ export const createServer = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch('http://localhost:8000/api/servers', {
+      const data = await authFetch('/api/servers', {
         method: 'POST',
         body: JSON.stringify(server),
       }, user.token);
@@ -64,7 +63,7 @@ export const joinServer = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/servers/${serverId}/join`, {
+      const data = await authFetch(`/api/servers/${serverId}/join`, {
         method: 'POST',
       }, user.token);
       if (data) {
@@ -82,7 +81,7 @@ export const editServer = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/servers/${server.id}`, {
+      const data = await authFetch(`/api/servers/${server.id}`, {
         method: 'PATCH',
         body: JSON.stringify(server),
       }, user.token);
@@ -101,7 +100,7 @@ export const deleteServer = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/servers/${serverId}`, {
+      const data = await authFetch(`/api/servers/${serverId}`, {
         method: 'DELETE',
       }, user.token);
       if (data) {
@@ -119,7 +118,7 @@ export const createChannel = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch('http://localhost:8000/api/channels', {
+      const data = await authFetch('/api/channels', {
         method: 'POST',
         body: JSON.stringify(channel),
       }, user.token);
@@ -138,7 +137,7 @@ export const editChannel = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/channels/${channel.id}`, {
+      const data = await authFetch(`/api/channels/${channel.id}`, {
         method: 'PATCH',
         body: JSON.stringify(channel),
       }, user.token);
@@ -157,7 +156,7 @@ export const deleteChannel = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/channels/${channel.id}`, {
+      const data = await authFetch(`/api/channels/${channel.id}`, {
         method: 'DELETE',
         body: JSON.stringify({ serverId: channel.serverId }),
       }, user.token);
@@ -176,7 +175,7 @@ export const createCategory = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch('http://localhost:8000/api/categories', {
+      const data = await authFetch('/api/categories', {
         method: 'POST',
         body: JSON.stringify(category),
       }, user.token);
@@ -195,7 +194,7 @@ export const editCategory = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/categories/${category.id}`, {
+      const data = await authFetch(`/api/categories/${category.id}`, {
         method: 'PATCH',
         body: JSON.stringify(category),
       }, user.token);
@@ -214,7 +213,7 @@ export const deleteCategory = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/categories/${category.id}`, {
+      const data = await authFetch(`/api/categories/${category.id}`, {
         method: 'DELETE',
         body: JSON.stringify({ serverId: category.serverId }),
       }, user.token);
@@ -233,7 +232,7 @@ export const getMessages = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/messages/${channelId}?skip=${skip}&take=${take}`, {}, user.token);
+      const data = await authFetch(`/api/messages/${channelId}?skip=${skip}&take=${take}`, {}, user.token);
       if (data) {
         return data;
       }
@@ -249,7 +248,7 @@ export const createChannelMessage = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch('http://localhost:8000/api/messages/channel', {
+      const data = await authFetch('/api/messages/channel', {
         method: 'POST',
         body: JSON.stringify(message),
       }, user.token);
@@ -268,7 +267,7 @@ export const updateMessage = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/messages/${message.id}`, {
+      const data = await authFetch(`/api/messages/${message.id}`, {
         method: 'PATCH',
         body: JSON.stringify(message),
       }, user.token);
@@ -287,7 +286,7 @@ export const deleteMessage = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/messages/${message.id}`, {
+      const data = await authFetch(`/api/messages/${message.id}`, {
         method: 'DELETE',
       }, user.token);
       if (data && data.id) {
@@ -305,7 +304,7 @@ export const getLikedMesssages = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch(`http://localhost:8000/api/likes/${userId}`, {}, user.token);
+      const data = await authFetch(`/api/likes/${userId}`, {}, user.token);
       if (data) {
         return data;
       }
@@ -321,7 +320,7 @@ export const likeMessage = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch('http://localhost:8000/api/likes/like', {
+      const data = await authFetch('/api/likes/like', {
         method: 'POST',
         body: JSON.stringify({ userId, messageId }),
       }, user.token);
@@ -340,7 +339,7 @@ export const unlikeMessage = createAsyncThunk(
     const { session } = state;
     const { user } = session;
     try {
-      const data = await authFetch('http://localhost:8000/api/likes/unlike', {
+      const data = await authFetch('/api/likes/unlike', {
         method: 'DELETE',
         body: JSON.stringify({ userId, messageId }),
       }, user.token);

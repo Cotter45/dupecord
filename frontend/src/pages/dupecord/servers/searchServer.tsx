@@ -27,7 +27,7 @@ export default function SearchServer({
     if (!value || !value.length) return;
 
     const res = await authFetch(
-      `http://localhost:8000/api/servers/search?name=${value}`
+      `/api/servers/search?name=${value}`
     );
     if (res.message) {
       setError(res.message);

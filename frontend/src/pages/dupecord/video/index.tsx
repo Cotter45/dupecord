@@ -136,7 +136,6 @@ export default function VideoChat() {
       }
       localStreamRef.current?.getTracks().forEach((track) => track.stop());
       for (const pc in pcsRef.current) {
-        console.log(pc);
         pcsRef.current[pc].close();
       }
     }
@@ -236,7 +235,6 @@ export default function VideoChat() {
         pcsRef.current[pc].close();
       }
       users.forEach((user) => {
-        console.log('HERE')
         if (!pcsRef.current[user.id]) return;
         pcsRef.current[user.id].close();
         delete pcsRef.current[user.id];
@@ -244,7 +242,6 @@ export default function VideoChat() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createPeerConnection, getLocalStream]);
-  console.log(users);
 
   return (
     <div className="relative h-full w-full flex flex-row justify-start items-center gap-2 overflow-auto m-auto">

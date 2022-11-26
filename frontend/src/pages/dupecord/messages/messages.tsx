@@ -95,7 +95,7 @@ export default function ChannelMessages({
         if (!messages.length) return;
         if (noMoar) return;
         const moreMessages = await authFetch(
-          `http://localhost:8000/api/messages/${params.id}?skip=${messages.length}&take=10`, {}, user.token
+          `/api/messages/${params.id}?skip=${messages.length}&take=10`, {}, user.token
         );
 
         if (!moreMessages.messages.length) return setNoMoar(true);
